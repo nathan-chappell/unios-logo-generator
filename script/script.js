@@ -1,71 +1,18 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 // script.jsx
-
+import MouseTracker from "./MouseTracker.js";
+import { toPct, clamp } from "./util.js";
 /*
- * Test out a component which on click/pointer down sets some status
- * to "tracking" and keeps sending the mouse data to some submitted
- * callback.  Then try to extract this logic to a custom hook.  Then
- * try to start making components...
- *
- * note: mouse, pointer, touch
- * idea: on mouseMove check if (event.buttons > 0)
+ * Demo the mouse tracker
  */
-function MouseTracker(props) {
-  const nop = () => {};
-
-  const moveCallback = props.moveCallback || nop;
-  const wheelCallback = props.wheelCallback || nop;
-  const triggerEvents = {
-    onMouseDown: startTracking,
-    onWheel: wheelCallback
-  };
-  const trackEvents = {
-    'mousemove': track,
-    'mouseup': finishTracking,
-    'dragend': finishTracking
-  };
-
-  function track(event) {
-    if (event.buttons == 0) {
-      console.log('button finish');
-      finishTracking();
-    } else {
-      console.count('track');
-      moveCallback({
-        x: event.pageX,
-        y: event.pageY
-      });
-    }
-  }
-
-  function finishTracking() {
-    console.log('finish tracking');
-
-    for (let e in trackEvents) {
-      window.removeEventListener(e, trackEvents[e]);
-    }
-  }
-
-  function startTracking() {
-    console.log('start tracking');
-
-    for (let e in trackEvents) {
-      window.addEventListener(e, trackEvents[e]);
-    }
-  }
-
-  return React.createElement("div", _extends({
-    draggable: "false"
-  }, triggerEvents), props.children);
-}
 
 function ShowMouse(props) {
   const [pos, setPos] = React.useState({
     x: 0,
     y: 0
-  });
-  console.log('showMouse:', pos);
+  }); //console.log('showMouse:', pos);
+
   const callbacks = {
     moveCallback: setPos,
     wheelCallback: e => {
@@ -77,5 +24,89 @@ function ShowMouse(props) {
   };
   return React.createElement(MouseTracker, callbacks, React.createElement("p", null, "x: ", pos.x, ", y: ", pos.y));
 }
+/*
+ * Consistent properties of the Slider, units are percent
+ */
 
-ReactDOM.render(React.createElement("div", null, React.createElement(ShowMouse, null), React.createElement(ShowMouse, null)), document.getElementById('react-root'));
+
+const SliderAttributes = {
+  width: .7,
+  height: .5,
+  swidth: .02
+};
+SliderAttributes.leftPad = .5 - SliderAttributes.width / 2;
+SliderAttributes.rightPad = .5 + SliderAttributes.width / 2;
+let Slider = React.forwardRef((props, ref) => {
+  ref = ref || {};
+  const {
+    width,
+    height,
+    swidth,
+    leftPad,
+    rightPad
+  } = SliderAttributes;
+  const {
+    pct
+  } = props; // position is a percentage
+
+  function getBack() {
+    return toPct({
+      x1: leftPad,
+      x2: rightPad,
+      y1: height,
+      y2: height
+    });
+  }
+
+  function getFront() {
+    return toPct({
+      x1: leftPad + pct * width - swidth,
+      x2: leftPad + pct * width + swidth,
+      y1: height,
+      y2: height
+    });
+  }
+
+  return React.createElement("svg", {
+    className: "Slider",
+    ref: ref
+  }, React.createElement("line", _extends({}, getBack(), {
+    className: "SliderBack"
+  })), React.createElement("line", _extends({}, getFront(), {
+    className: "SliderFront"
+  })));
+});
+
+function UseSlider(props) {
+  const [pct, setPct] = React.useState(0);
+  const ref = React.useRef(null);
+  /*
+   * moveCallback : calculate the position relative to the slider in
+   * percentage
+   */
+
+  function moveCallback(pos) {
+    console.log('moveCallback');
+
+    if (ref.current == null) {
+      console.error('UseSlider null ref');
+      return;
+    }
+
+    let bbox = ref.current.getBoundingClientRect();
+    let left = bbox.left + bbox.width * SliderAttributes.leftPad;
+    let width = bbox.width * SliderAttributes.width;
+    setPct(clamp(0, (pos.x - left) / width, 1));
+  }
+
+  return React.createElement(MouseTracker, {
+    moveCallback: moveCallback
+  }, React.createElement(Slider, {
+    ref: ref,
+    pct: pct
+  }));
+}
+
+ReactDOM.render(React.createElement("div", null, React.createElement(ShowMouse, null), React.createElement(UseSlider, {
+  pct: 0
+})), document.getElementById('react-root'));

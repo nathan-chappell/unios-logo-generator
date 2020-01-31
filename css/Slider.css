@@ -1,0 +1,20 @@
+
+.Slider {
+  width : 100px;
+  height : 25px;
+  border : 5px solid black;
+}
+
+.SliderBack, .SliderFront {
+  stroke : black;
+  stroke-linecap : round;
+}
+
+.SliderBack {
+  stroke-width : 5px;
+}
+
+.SliderFront {
+  stroke-width : 12px;
+}
+

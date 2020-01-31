@@ -1,68 +1,14 @@
 // script.jsx
 
-/*
- * Component wrapper that tracks the mouse and registers new positions
- * and wheels.
- * 
- * @prop.moveCallback
- *    callback for mouse onmove event
- * @prop.wheelCallback
- *    callback for mouse onwheel event
- */
-function MouseTracker(props) {
-  const nop = () => {};
-  const moveCallback = props.moveCallback || nop;
-  const wheelCallback = props.wheelCallback || nop;
-
-  // events which start tracking, attached to the component
-  const triggerEvents = {
-    onMouseDown : startTracking,
-    onWheel : wheelCallback
-  };
-
-  // events involved in tracking, attached to the window
-  const trackEvents = {
-    'mousemove' : track,
-    'mouseup' : finishTracking,
-    'dragend' : finishTracking,
-  }
-
-  function track(event) {
-    // in case something happened and we didn't cancel tracking when
-    // we were supposed to
-    if (event.buttons == 0) {
-      finishTracking();
-    } else {
-      moveCallback({x:event.pageX, y:event.pageY});
-    }
-  }
-
-  function finishTracking() {
-    for (let e in trackEvents) {
-      window.removeEventListener(e,trackEvents[e]);
-    }
-  }
-
-  function startTracking() {
-    for (let e in trackEvents) {
-      window.addEventListener(e,trackEvents[e]);
-    }
-  }
-
-  // ??? uncertain why draggable is necessary, but it seems to be
-  return (
-    <div draggable="false" {...triggerEvents} >
-      {props.children}
-    </div>
-  )
-}
+import MouseTracker from "./MouseTracker.js";
+import { toPct, clamp } from "./util.js";
 
 /*
  * Demo the mouse tracker
  */
 function ShowMouse(props) {
   const [pos,setPos] = React.useState({x:0,y:0});
-  console.log('showMouse:', pos);
+  //console.log('showMouse:', pos);
   const callbacks = {
     moveCallback : setPos,
     wheelCallback : (e) => {
@@ -77,8 +23,79 @@ function ShowMouse(props) {
   );
 }
 
+/*
+ * Consistent properties of the Slider, units are percent
+ */
+const SliderAttributes = {
+  width : .7,
+  height : .5,
+  swidth : .02
+};
+SliderAttributes.leftPad = .5 - SliderAttributes.width/2;
+SliderAttributes.rightPad = .5 + SliderAttributes.width/2;
+
+let Slider = React.forwardRef((props, ref) => {
+  ref = ref || {};
+  const {width, height, swidth, leftPad, rightPad} = SliderAttributes;
+  const { pct } = props;
+  // position is a percentage
+
+  function getBack() {
+    return toPct({ 
+      x1: leftPad,
+      x2: rightPad, 
+      y1: height, 
+      y2: height
+    });
+  }
+
+  function getFront() {
+    return toPct({ 
+      x1: leftPad + pct*width - swidth,
+      x2: leftPad + pct*width + swidth,
+      y1: height,
+      y2: height
+    });
+  }
+
+  return (
+    <svg className="Slider" ref={ref}>
+      <line {...getBack()} className="SliderBack" />
+      <line {...getFront()} className="SliderFront" />
+    </svg>
+  );
+});
+
+function UseSlider(props) {
+  const [pct, setPct] = React.useState(0);
+  const ref = React.useRef(null);
+  /*
+   * moveCallback : calculate the position relative to the slider in
+   * percentage
+   */
+  function moveCallback(pos) {
+    console.log('moveCallback');
+    if (ref.current == null) {
+      console.error('UseSlider null ref');
+      return;
+    }
+    /*
+     * Calculate position of mouse relative to the actual slider bar
+     */
+    let bbox = ref.current.getBoundingClientRect();
+    let left = bbox.left + bbox.width*SliderAttributes.leftPad;
+    let width = bbox.width * SliderAttributes.width;
+    setPct(clamp(0,(pos.x - left)/width,1));
+  }
+
+  return (
+    <MouseTracker moveCallback={moveCallback}>
+      <Slider ref={ref} pct={pct} />
+    </MouseTracker>
+  );
+}
 
 ReactDOM.render(
-  <div><ShowMouse /><ShowMouse /></div>,
+  <div><ShowMouse /><UseSlider pct={0}/></div>,
   document.getElementById('react-root')
 );
