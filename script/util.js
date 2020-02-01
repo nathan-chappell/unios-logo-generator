@@ -1,9 +1,11 @@
-// script/util.js
+// util.js
 
 export {
   toPct,
   clamp,
-  roundDigits
+  roundDigits,
+  rad2deg,
+  deg2rad,
 };
 
 function clamp(min,val,max) {
@@ -12,6 +14,14 @@ function clamp(min,val,max) {
 
 function roundDigits(x,d) {
   return Math.round(x*10**d)/10**d;
+}
+
+function deg2rad(deg) {
+  return deg*Math.PI/180;
+}
+
+function rad2deg(rad) {
+  return rad*180/Math.PI;
 }
 
 // percentage converter

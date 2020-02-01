@@ -1,13 +1,7 @@
 /* Slider.css */
 
-.SliderAndInput {
-  border : 5px solid black;
-  height : 75px;
-  width : 150px;
-}
-
 .SliderSVG {
-  height : 25px;
+  height : 100%;
   width : 100%;
 }
 
@@ -17,13 +11,9 @@
 }
 
 .SliderBack {
-  stroke-width : 5px;
+  stroke-width : 5%;
 }
 
 .SliderFront {
-  stroke-width : 12px;
-}
-
-.SliderInput {
-  width : 4em;
+  stroke-width : 10%;
 }

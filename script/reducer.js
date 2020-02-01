@@ -1,9 +1,12 @@
-// StateHolder.jsx
+// reducer.js
 
 export { 
-  ReducerContext, 
-  StateHolder 
+  reducer,
+  stateModel,
+  ReducerContext
 };
+
+const ReducerContext = React.createContext(null);
 
 /*
  * state = {
@@ -45,22 +48,12 @@ function verifyAction(state, action) {
   return false;
 }
 
-function reducer(state, action) {
-  if (!verifyAction(action)) {
+function reducer(oldstate, action) {
+  let state = {...oldstate};
+  //console.log('reducer:',state,action);
+  if (!verifyAction(state, action)) {
     console.error('bad action!', action, state);
   }
   state[action.type][action.id][action.attribute] = action.value;
   return state;
 }
-
-const ReducerContext = React.createContext(null);
-
-function StateHolder(props) {
-  const [state, dispatch] = React.useReducer(reducer, stateModel);
-  return (
-    <ReducerContext.Provider value={dispatch}>
-      {props.children}
-    </ReducerContext.Provider>
-  );
-}
-

@@ -5,9 +5,7 @@ export { MouseTracker, Centerer, ShowMouse };
 /*
  * Component wrapper that tracks the mouse and registers new positions
  * and wheels.
- * 
- * @prop.moveCallback
- *    callback for mouse onmove event
+ * @prop.moveCallback callback for mouse onmove event
  * @prop.wheelCallback
  *    callback for mouse onwheel event
  */
@@ -15,6 +13,7 @@ function MouseTracker(props) {
   const nop = () => {};
   const moveCallback = props.moveCallback || nop;
   const wheelCallback = props.wheelCallback || nop;
+  const className = props.className || 'MouseTracker';
 
   // events which start tracking, attached to the component
   const triggerEvents = {
@@ -55,7 +54,7 @@ function MouseTracker(props) {
 
   // ??? uncertain why draggable is necessary, but it seems to be
   return (
-    <div draggable="false" {...triggerEvents} >
+    <div draggable="false" {...triggerEvents} className={className}>
       {props.children}
     </div>
   )

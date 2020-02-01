@@ -1,68 +1,92 @@
 // StateControllers.jsx
 
 export { 
-  SliderAndInput 
+  RingController
 };
 
 import {
   clamp,
-  roundDigits
+  roundDigits,
+  deg2rad,
+  rad2deg,
 } from "./util.js";
 import { 
   MouseTracker, 
   Centerer
 } from "./UtilityComponents.js";
 import {
-  Slider
+  Slider,
+  getCalcLengthCb,
 } from "./Slider.js";
 import {
-  StateHolder,
+  Dial,
+  getCalcAngleCb,
+} from "./Dial.js";
+import {
   ReducerContext
-} from "StateHolder.js";
+} from "./reducer.js";
 
-function SliderAndInput(props) {
+function RingController(props) {
+  const { length, angle, ringId} = props;
   const dispatch = React.useContext(ReducerContext);
-  const ref = React.useRef(null);
-  const _setPct = (x) => {
-    //console.log('_setPct',roundDigits(x,3));
-    dispatch({
+  const sliderRef = React.useRef(null);
+  const dialRef = React.useRef(null);
+  const action = {
       type : 'rings',
-      id : props.ringId,
+      id : ringId,
+  };
+  // length handling
+  const _setLength = (x) => {
+    dispatch({
+      ...action,
       attribute : 'length',
       value : roundDigits(x,3),
     });
   }
-  /*
-   * moveCallback : calculate the position relative to the slider in
-   * _Percentage
-   */
-  function moveCallback(pos) {
-    //console.log('moveCallback');
-    if (ref.current == null) {
-      console.error('SliderAndInput null ref');
-      return;
-    }
-    /*
-     * Calculate position of mouse relative to the actual slider bar
-     */
-    let bbox = ref.current.getBoundingClientRect();
-    let left = bbox.left + bbox.width*SliderAttributes.leftPad;
-    let width = bbox.width * SliderAttributes.width;
-    _setPct(clamp(0,(pos.x - left)/width,1));
+  // tricky...
+  const sliderMoveCb = React.useCallback(
+    (() => {
+      const calc = getCalcLengthCb(sliderRef);
+      return (pos) => {
+        _setLength(calc(pos))
+      };
+    })(),[sliderRef.current]);
+
+  // angle handling
+  const _setAngle = (x) => {
+    dispatch({
+      ...action,
+      attribute : 'angle',
+      value : roundDigits(x,3),
+    });
   }
+  // tricky...
+  const dialMoveCb = React.useCallback(
+    (() => {
+      const calc = getCalcAngleCb(dialRef);
+      return (pos) => {
+        _setAngle(calc(pos))
+      };
+    })(),[dialRef.current]);
 
   return (
-    <div className="SliderAndInput">
-      <Centerer>
-      <MouseTracker moveCallback={moveCallback}>
-        <Slider ref={ref} pct={pct} />
+    <div className="RingC">
+      <MouseTracker moveCallback={sliderMoveCb} 
+        className="RingCSlider">
+        <Slider ref={sliderRef} length={length} />
       </MouseTracker>
-      </Centerer>
-      <Centerer>
-      <input type="number" onChange={(e) => _setPct(e.target.value)} 
-             value={pct} min={0} max={1} step={.001}
-             className={"SliderInput"}></input>
-      </Centerer>
+      <input type="number" value={length} min={0} max={1} step={.001}
+             onChange={(e) => _setLength(e.target.value)}
+             className="RingCSliderInput" />
+      <MouseTracker moveCallback={dialMoveCb} 
+        className="RingCDial">
+        <Dial ref={dialRef} angle={angle} />
+      </MouseTracker>
+      <input type="number" value={roundDigits(rad2deg(angle),1)} 
+             min={0} max={360} step={.1} onChange={
+               (e) => _setAngle(deg2rad(e.target.value))
+             }
+             className="RingCDialInput" />
     </div>
   );
 }

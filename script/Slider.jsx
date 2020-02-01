@@ -1,7 +1,9 @@
 // Slider.jsx
 
 export { 
-  Slider 
+  Slider,
+  SliderAttributes,
+  getCalcLengthCb
 };
 
 import { 
@@ -21,10 +23,31 @@ const SliderAttributes = {
 SliderAttributes.leftPad = .5 - SliderAttributes.width/2;
 SliderAttributes.rightPad = .5 + SliderAttributes.width/2;
 
+/*
+ * get callback to calculate new slider position
+ */
+function getCalcLengthCb(ref) {
+  return (pos) => {
+    //console.log('length callback');
+    if (ref.current == null) {
+      console.error('Slider move callback null ref');
+      return;
+    }
+    /*
+     * Calculate position of mouse relative to the actual slider bar
+     */
+    let bbox = ref.current.getBoundingClientRect();
+    let left = bbox.left + bbox.width*SliderAttributes.leftPad;
+    let width = bbox.width * SliderAttributes.width;
+    return(clamp(0,(pos.x - left)/width,1));
+  };
+}
+
+
 let Slider = React.forwardRef((props, ref) => {
   ref = ref || {};
   const {width, height, swidth, leftPad, rightPad} = SliderAttributes;
-  const { pct } = props;
+  const { length } = props;
   // position is a _Percentage
 
   function getBack() {
@@ -38,16 +61,17 @@ let Slider = React.forwardRef((props, ref) => {
 
   function getFront() {
     return toPct({ 
-      x1: leftPad + pct*width - swidth,
-      x2: leftPad + pct*width + swidth,
+      x1: leftPad + length*width - swidth,
+      x2: leftPad + length*width + swidth,
       y1: height,
       y2: height
     });
   }
 
   return (
-    <svg className="SliderSVG" ref={ref} viewBox="0 0 1 1">
+    <svg className="SliderSVG" ref={ref}>
       <line {...getBack()} className="SliderBack" />
+      <path d="M .10 .10 L .90 0" stroke="blue" strokeWidth=".1"/>
       <line {...getFront()} className="SliderFront" />
     </svg>
   );

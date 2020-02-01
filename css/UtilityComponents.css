@@ -2,6 +2,7 @@
 
 .centerer {
   display : flex;
+  height : auto;
 }
 
 .spacer {
