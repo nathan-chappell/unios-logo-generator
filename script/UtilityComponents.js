@@ -1,6 +1,6 @@
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-// script/MouseTracker.js
+// UtilityComponents.jsx
 
 /*
  * Component wrapper that tracks the mouse and registers new positions
@@ -63,4 +63,14 @@ function MouseTracker(props) {
   }, triggerEvents), props.children);
 }
 
-export default MouseTracker;
+function Centerer(props) {
+  return React.createElement("div", {
+    className: "centerer"
+  }, React.createElement("div", {
+    className: "spacer"
+  }), props.children, React.createElement("div", {
+    className: "spacer"
+  }));
+}
+
+export { MouseTracker };

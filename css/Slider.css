@@ -1,8 +1,14 @@
+/* css/Slider.css */
 
-.Slider {
-  width : 100px;
-  height : 25px;
+.SliderAndInput {
   border : 5px solid black;
+  height : 75px;
+  width : 150px;
+}
+
+.SliderSVG {
+  height : 25px;
+  width : 100%;
 }
 
 .SliderBack, .SliderFront {
@@ -18,3 +24,13 @@
   stroke-width : 12px;
 }
 
+.SliderInput {
+  width : 4em;
+}
+
+.centerer {
+  display : flex;
+}
+.spacer {
+  flex : 1;
+}

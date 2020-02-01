@@ -1,4 +1,4 @@
-// script/MouseTracker.js
+// UtilityComponents.jsx
 
 /*
  * Component wrapper that tracks the mouse and registers new positions
@@ -59,4 +59,14 @@ function MouseTracker(props) {
   )
 }
 
-export default MouseTracker;
+function Centerer(props) {
+  return (
+    <div className="centerer">
+      <div className="spacer"></div>
+        {props.children}
+      <div className="spacer"></div>
+    </div>
+  );
+}
+
+export { MouseTracker };
