@@ -5,5 +5,5 @@ jsx : $(addsuffix .js, $(basename $(wildcard script/*.jsx)))
 %.js : %.jsx
 	babel $< -o $@
 
-jsxClean : 
-
+jsxClean :
+	rm $(addsuffix .js, $(basename $(wildcard script/*.jsx)))
