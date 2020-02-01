@@ -1,6 +1,6 @@
 // UtilityComponents.jsx
 
-export { MouseTracker, Centerer };
+export { MouseTracker, Centerer, ShowMouse };
 
 /*
  * Component wrapper that tracks the mouse and registers new positions
@@ -68,5 +68,24 @@ function Centerer(props) {
         {props.children}
       <div className="spacer"></div>
     </div>
+  );
+}
+
+/*
+ * Demo the mouse tracker
+ */
+function ShowMouse(props) {
+  const [pos,setPos] = React.useState({x:0,y:0});
+  //console.log('showMouse:', pos);
+  const callbacks = {
+    moveCallback : setPos,
+    wheelCallback : (e) => {
+      setPos({ x:(pos.x + e.deltaX), y:(pos.y + e.deltaY) });
+    }
+  }
+  return (
+    <MouseTracker {...callbacks}>
+      <p>x: {pos.x}, y: {pos.y}</p>
+    </MouseTracker>
   );
 }

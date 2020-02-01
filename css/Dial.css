@@ -1,0 +1,17 @@
+/* Dial.css */
+
+.DialAndInput {
+  width : 50px;
+}
+
+.DialCircle {
+  stroke : black;
+  stroke-width : 10%;
+  fill : none;
+}
+
+.DialLine {
+  stroke : black;
+  stroke-width : 10%;
+  stroke-linecap : round;
+}

@@ -1,6 +1,10 @@
 // script/util.js
 
-export { toPct, clamp, roundDigits };
+export {
+  toPct,
+  clamp,
+  roundDigits
+};
 
 function clamp(min,val,max) {
   return val < min ? min : val > max ? max : val;
