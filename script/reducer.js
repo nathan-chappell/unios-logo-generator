@@ -18,9 +18,12 @@ const ReducerContext = React.createContext(null);
 const stateModel = {
   rings : {
     'ring0' : { length : 1, angle : 0 },
+    'ring1' : { length : 1, angle : 0 },
+    'ring2' : { length : 1, angle : 0 },
+    'ring3' : { length : 1, angle : 0 },
   },
   color : { 
-    all : { inner : 'black', outer : 'black', },
+    all : { inner : 'grey', outer : 'black', },
   }
 };
 

@@ -19,20 +19,42 @@ import {
   RingController,
 } from "./StateControllers.js";
 
-function TopLevel(props) {
+/*
+ * Make a little button to hide it...
+ * We need to connect the control panel to a drawing somewhere...
+ */
+function ControlPanel(props) {
   console.log('building controller');
   let [state, dispatch] = React.useReducer(reducer,stateModel);
   const { rings } = state;
+  let controllers = Object.keys(rings).map(
+    (ringId) => {
+      let { length, angle } = rings[ringId];
+      return (
+        <RingController key={ringId} ringId={ringId}
+          length={length} angle={angle} />
+      );
+    });
+  
   return (
     <ReducerContext.Provider value={dispatch}>
-      <RingController ringId='ring0'
-        length={rings['ring0'].length} 
-        angle={rings['ring0'].angle} />,
+      <div className="ControlPanel">
+        {controllers}
+      </div>
     </ReducerContext.Provider>
   );
 }
 
+/*
+ * show the damn state...  Need to lift it higher!
+ */
+function PreviewLogo(props) {
+}
+
+function TopLevel(props) {
+}
+
 ReactDOM.render(
-  <TopLevel />,
+  <ControlPanel />,
   document.getElementById('react-root')
 );

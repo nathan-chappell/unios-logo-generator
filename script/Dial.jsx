@@ -48,11 +48,14 @@ let Dial = React.forwardRef((props,ref) => {
   const lineProps = { 
     ...circleProps, 
       angle : props.angle,
-      rStart : .05,
+      rStart : .1,
       rStop : circleProps.r,
   };
+  /*
+   * Adjust the viewbox to scale the dial within
+   */
   return (
-    <svg className="DialSVG" ref={ref} viewBox="0 0 1 1">
+    <svg className="DialSVG" ref={ref} viewBox="-.1 -.1 1.2 1.2">
       <CirclePath {...circleProps} className="DialCircle"/>
       <RadialLine {...lineProps} className="DialLine" />
     </svg>

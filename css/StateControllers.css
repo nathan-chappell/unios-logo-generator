@@ -1,27 +1,39 @@
 /* StateControllers.css */
 
+.ControlPanel {
+  width : 250px;
+  background : lightgrey;
+  border-radius : 20px;
+  margin-left : 0;
+  margin-right : 0;
+}
+
 .RingC {
-  margin : 0;
-  padding : 0;
-  border : 0;
+  margin-top : 1em;
+  background : grey;
+  border : black solid 2px;
+  border-radius : 15px;
   display : grid;
   /*
    * The Dial has a viewbox set to preserve its aspect ratio.
    * keep the dial-row and dial-column the same height/width
    */
-  grid : "Slider Dial"   50px
+  grid : "Slider Dial"   75px
          "SInput DInput" 25px
-         / 150px 50px;
+         / 1fr   75px;
 }
 
 .RingCSlider {
   grid-area : Slider;
   align-self : center;
+  height : 100%;
+  width : 100%;
 }
 .RingCSliderInput {
   grid-area : SInput;
   justify-self : center;
   width : 4em;
+
 }
 .RingCDial {
   grid-area : Dial;
@@ -31,4 +43,3 @@
   justify-self : center;
   width : 4em;
 }
-

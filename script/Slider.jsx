@@ -71,7 +71,6 @@ let Slider = React.forwardRef((props, ref) => {
   return (
     <svg className="SliderSVG" ref={ref}>
       <line {...getBack()} className="SliderBack" />
-      <path d="M .10 .10 L .90 0" stroke="blue" strokeWidth=".1"/>
       <line {...getFront()} className="SliderFront" />
     </svg>
   );
