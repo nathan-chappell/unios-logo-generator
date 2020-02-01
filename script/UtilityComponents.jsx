@@ -1,5 +1,7 @@
 // UtilityComponents.jsx
 
+export { MouseTracker, Centerer };
+
 /*
  * Component wrapper that tracks the mouse and registers new positions
  * and wheels.
@@ -38,14 +40,14 @@ function MouseTracker(props) {
   }
 
   function finishTracking() {
-    console.log('finish tracking');
+    //console.log('finish tracking');
     for (let e in trackEvents) {
       window.removeEventListener(e,trackEvents[e]);
     }
   }
 
   function startTracking() {
-    console.log('start tracking');
+    //console.log('start tracking');
     for (let e in trackEvents) {
       window.addEventListener(e,trackEvents[e]);
     }
@@ -68,5 +70,3 @@ function Centerer(props) {
     </div>
   );
 }
-
-export { MouseTracker };

@@ -1,4 +1,4 @@
-/* css/Slider.css */
+/* Slider.css */
 
 .SliderAndInput {
   border : 5px solid black;
@@ -26,11 +26,4 @@
 
 .SliderInput {
   width : 4em;
-}
-
-.centerer {
-  display : flex;
-}
-.spacer {
-  flex : 1;
 }

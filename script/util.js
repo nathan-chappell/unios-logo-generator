@@ -1,5 +1,7 @@
 // script/util.js
 
+export { toPct, clamp, roundDigits };
+
 function clamp(min,val,max) {
   return val < min ? min : val > max ? max : val;
 }
@@ -22,5 +24,3 @@ function toPct(v) {
     default : return v;
   }
 }
-
-export { toPct, clamp, roundDigits };

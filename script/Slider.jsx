@@ -1,5 +1,9 @@
 // Slider.jsx
 
+export { Slider, SliderAndInput };
+import { MouseTracker, Centerer } from "./UtilityComponents.js";
+import { toPct, clamp, roundDigits } from "./util.js";
+
 /*
  * Consistent properties of the Slider, units are percent
  */
@@ -47,7 +51,7 @@ function SliderAndInput(props) {
   const [pct, setPct] = React.useState(0);
   const ref = React.useRef(null);
   const _setPct = (x) => {
-    console.log('_setPct',roundDigits(x,3));
+    //console.log('_setPct',roundDigits(x,3));
     setPct(roundDigits(x,3));
   }
   /*
@@ -55,7 +59,7 @@ function SliderAndInput(props) {
    * percentage
    */
   function moveCallback(pos) {
-    console.log('moveCallback');
+    //console.log('moveCallback');
     if (ref.current == null) {
       console.error('SliderAndInput null ref');
       return;
@@ -84,5 +88,3 @@ function SliderAndInput(props) {
     </div>
   );
 }
-
-export { Slider, SliderAndInput };
