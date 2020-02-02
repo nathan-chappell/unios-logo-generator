@@ -1,4 +1,4 @@
-// util.js
+// util.jsx
 
 export {
   toPct,

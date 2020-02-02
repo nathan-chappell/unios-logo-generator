@@ -1,4 +1,4 @@
-// StateControllers.jsx
+// RingController.jsx
 
 export { 
   RingController
