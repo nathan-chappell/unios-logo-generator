@@ -1,4 +1,4 @@
-// reducer.js
+// model.jsx
 
 export { 
   reducer,

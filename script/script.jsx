@@ -4,20 +4,20 @@ import {
   toPct,
   clamp,
   roundDigits 
-} from "./util.js";
+} from "./util/util.js";
 import { 
   MouseTracker, 
   Centerer, 
   ShowMouse 
-} from "./UtilityComponents.js";
+} from "./controller/MouseTracker.js";
 import { 
   reducer,
   stateModel,
   ReducerContext
-} from "./reducer.js";
+} from "./model/model.js";
 import { 
   RingController,
-} from "./StateControllers.js";
+} from "./controller/StateControllers.js";
 
 /*
  * Make a little button to hide it...

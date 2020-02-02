@@ -10,7 +10,7 @@ import {
   toPct,
   clamp, 
   roundDigits,
-} from "./util.js";
+} from "../util/util.js";
 
 /*
  * Consistent properties of the Slider, units are percent

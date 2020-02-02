@@ -9,12 +9,12 @@ import {
   toPct,
   clamp,
   roundDigits 
-} from "./util.js";
+} from "../util/util.js";
 import {
   CalculatedPath,
   CirclePath,
   RadialLine,
-} from "./svgUtil.js";
+} from "../util/svgUtil.js";
 
 /*
  * get callback to calculate new dial angle

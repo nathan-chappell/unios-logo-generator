@@ -1,4 +1,4 @@
-// UtilityComponents.jsx
+// MouseTracker.jsx
 
 export { MouseTracker, Centerer, ShowMouse };
 

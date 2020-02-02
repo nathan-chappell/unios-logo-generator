@@ -9,22 +9,22 @@ import {
   roundDigits,
   deg2rad,
   rad2deg,
-} from "./util.js";
+} from "../util/util.js";
 import { 
   MouseTracker, 
   Centerer
-} from "./UtilityComponents.js";
+} from "../controller/MouseTracker.js";
 import {
   Slider,
   getCalcLengthCb,
-} from "./Slider.js";
+} from "../view/Slider.js";
 import {
   Dial,
   getCalcAngleCb,
-} from "./Dial.js";
+} from "../view/Dial.js";
 import {
   ReducerContext
-} from "./reducer.js";
+} from "../model/model.js";
 
 function RingController(props) {
   const { length, angle, ringId} = props;
