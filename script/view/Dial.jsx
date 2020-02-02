@@ -8,13 +8,13 @@ export {
 import { 
   toPct,
   clamp,
-  roundDigits 
+  roundDigits,
+  rad2deg,
 } from "../util/util.js";
 import {
-  CalculatedPath,
+  ViewBox,
   CirclePath,
-  RadialLine,
-} from "../util/svgUtil.js";
+} from "../view/CirclePath.js";
 
 /*
  * get callback to calculate new dial angle
@@ -39,25 +39,14 @@ function getCalcAngleCb(ref) {
 }
 
 let Dial = React.forwardRef((props,ref) => {
-  const { angle } = props;
-  const circleProps = { 
-    cx : .5, 
-    cy : .5, 
-    r : .45 
-  };
-  const lineProps = { 
-    ...circleProps, 
-      angle : props.angle,
-      rStart : .1,
-      rStop : circleProps.r,
-  };
-  /*
-   * Adjust the viewbox to scale the dial within
-   */
+  const transform = `rotate(${-rad2deg(props.angle)})`;
+  const r = .45;
+  let fwdProps = { className : "DialCircle" };
   return (
-    <svg className="DialSVG" ref={ref} viewBox="-.1 -.1 1.2 1.2">
-      <CirclePath {...circleProps} className="DialCircle"/>
-      <RadialLine {...lineProps} className="DialLine" />
+    <svg className="DialSVG" ref={ref} viewBox={ViewBox}
+         transform={transform}>
+      <CirclePath r={r} length={1} fwdProps={fwdProps}/>
+      <line x1=".1" x2={r} y1="0" y2="0" className="DialLine" />
     </svg>
   );
 });

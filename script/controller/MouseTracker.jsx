@@ -1,6 +1,10 @@
 // MouseTracker.jsx
 
-export { MouseTracker, Centerer, ShowMouse };
+export {
+  MouseTracker, 
+  Centerer, 
+  ShowMouse 
+};
 
 /*
  * Component wrapper that tracks the mouse and registers new positions
