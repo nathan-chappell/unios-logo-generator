@@ -31,10 +31,6 @@ import {
   LogoSVG,
 } from "./view/logoSVG.js";
 
-/*
- * Need a color picker...
- */
-
 function App(props) {
   let [state, dispatch] = React.useReducer(reducer,stateModel);
   return (

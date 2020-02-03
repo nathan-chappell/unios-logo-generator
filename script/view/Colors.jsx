@@ -20,9 +20,9 @@ function Colors(props) {
   return (
     <svg viewBox={ViewBox} {...props.fwdProps}> 
       <g fill="none" stroke="grey" strokeWidth=".02">
-        <CirclePath  {...circleProps} angle={0} z="true"
+        <CirclePath  {...circleProps} phase={0} z="true"
           fwdProps={fwdInner} />
-        <CirclePath {...circleProps} angle={Math.PI} z="true"
+        <CirclePath {...circleProps} phase={Math.PI} z="true"
           fwdProps={fwdOuter} />
       </g>
     </svg>

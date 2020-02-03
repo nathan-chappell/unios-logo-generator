@@ -26,8 +26,12 @@ import {
   ReducerContext
 } from "../model/model.js";
 
+function LengthControlls(dispatch,action,ref) {
+
+}
+
 function RingController(props) {
-  const { length, angle, ringId} = props;
+  const { length, phase, ringId} = props;
   const dispatch = React.useContext(ReducerContext);
   const sliderRef = React.useRef(null);
   const dialRef = React.useRef(null);
@@ -35,6 +39,7 @@ function RingController(props) {
       type : 'rings',
       id : ringId,
   };
+
   // length handling
   const _setLength = (x) => {
     dispatch({
@@ -52,11 +57,11 @@ function RingController(props) {
       };
     })(),[sliderRef.current]);
 
-  // angle handling
+  // phase handling
   const _setAngle = (x) => {
     dispatch({
       ...action,
-      attribute : 'angle',
+      attribute : 'phase',
       value : roundDigits(x,3),
     });
   }
@@ -80,9 +85,9 @@ function RingController(props) {
              className="RingCSliderInput" />
       <MouseTracker moveCallback={dialMoveCb} 
         className="RingCDial">
-        <Dial ref={dialRef} angle={angle} />
+        <Dial ref={dialRef} phase={phase} />
       </MouseTracker>
-      <input type="number" value={roundDigits(rad2deg(angle),1)} 
+      <input type="number" value={roundDigits(rad2deg(phase),1)} 
              min={0} max={360} step={.1} onChange={
                (e) => _setAngle(deg2rad(e.target.value))
              }

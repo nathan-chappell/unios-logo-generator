@@ -17,11 +17,11 @@ import {
 } from "../view/CirclePath.js";
 
 /*
- * get callback to calculate new dial angle
+ * get callback to calculate new dial phase
  */
 function getCalcAngleCb(ref) {
   return (pos) => {
-    //console.log('angle callback');
+    //console.log('phase callback');
     if (ref.current == null) {
       console.error('Slider move callback null ref');
       return;
@@ -39,7 +39,7 @@ function getCalcAngleCb(ref) {
 }
 
 let Dial = React.forwardRef((props,ref) => {
-  const transform = `rotate(${-rad2deg(props.angle)})`;
+  const transform = `rotate(${-rad2deg(props.phase)})`;
   const r = .45;
   let fwdProps = { className : "DialCircle" };
   return (

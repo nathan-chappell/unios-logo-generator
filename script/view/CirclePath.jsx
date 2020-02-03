@@ -17,11 +17,11 @@ const ViewBox = "-.5 -.5 1 1";
  *
  * @r : radius
  * @length : percentage of circle to draw
- * @?angle : angle of rotation
+ * @?phase : phase of rotation
  */
 function CirclePath(props) {
-  const { r, length, angle, fwdProps, z } = props;
-  const transform = `rotate(${-rad2deg(angle ? angle : 0)})`;
+  const { r, length, phase, fwdProps, z } = props;
+  const transform = `rotate(${-rad2deg(phase ? phase : 0)})`;
   const longSweepFlag = length >= .5 ? 1 : 0;
   let d;
   // annoying special case for full circle

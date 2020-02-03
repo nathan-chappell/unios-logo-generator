@@ -10,17 +10,17 @@ const ReducerContext = React.createContext(null);
 
 /*
  * state = {
- *  rings : { id : { lengthPct, angle } }
+ *  rings : { id : { lengthPct, phase, period } }
  *  color : { inner : color, outer : color }
  * }
  */
 
 const stateModel = {
   rings : {
-    ring0 : { length : 1, angle : 0 },
-    ring1 : { length : 1, angle : 0 },
-    ring2 : { length : 1, angle : 0 },
-    ring3 : { length : 1, angle : 0 },
+    ring0 : { length : 1, phase : 0, period : 0 },
+    ring1 : { length : 1, phase : 0, period : 0 },
+    ring2 : { length : 1, phase : 0, period : 0 },
+    ring3 : { length : 1, phase : 0, period : 0 },
   },
   colors : { 
     inner : 'grey', 
@@ -36,7 +36,7 @@ function verifyActionValue(attribute,value) {
       return typeof value == 'number' &&
              0 <= value && value <= 1;
     }
-    case 'angle' : {
+    case 'phase' : {
       return typeof value == 'number' &&
              0 <= value && value < Math.PI*2;
     }

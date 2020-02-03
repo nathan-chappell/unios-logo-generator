@@ -13,10 +13,10 @@ function ControlPanel(props) {
   const ringIds = Object.keys(rings);
   const controllers = ringIds.map(
     (ringId) => {
-      let { length, angle } = rings[ringId];
+      let { length, phase } = rings[ringId];
       return (
         <RingController key={ringId} ringId={ringId}
-          length={length} angle={angle} />
+          length={length} phase={phase} />
       );
     });
   

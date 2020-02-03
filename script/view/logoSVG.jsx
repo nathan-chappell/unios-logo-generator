@@ -27,9 +27,23 @@ function LogoSVG(props) {
     const circleProps = {
       r : logoProps.radii[index],
       length : rings[key].length,
-      angle : rings[key].angle,
+      phase : rings[key].phase,
     }
-    return <CirclePath key={key} {...circleProps} />;
+    const animateProps = {
+      attributeName : "transform",
+      type : "rotate",
+      from : 0,
+      to : 360,
+      //dur : `${rings[key].period}s`
+      dur : "1s",
+      repeatCount : "indefinite",
+    };
+    return (
+      <g key={key}>
+        <CirclePath {...circleProps} />
+        <animateTransform {...animateProps} />
+      </g>
+    );
   });
   return (
     <svg viewBox={ViewBox} className="LogoSVG">
