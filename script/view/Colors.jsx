@@ -10,19 +10,20 @@ import {
 } from "../view/CirclePath.js";
 
 function Colors(props) {
-  const { theme } = props;
-  console.log('colors',theme);
+  const { myTheme } = props;
   const circleProps = {
     r : .4,
     length : .5,
   };
+  const fwdInner = {fill : myTheme.inner};
+  const fwdOuter = {fill : myTheme.outer};
   return (
-    <svg viewBox={ViewBox}> 
+    <svg viewBox={ViewBox} {...props.fwdProps}> 
       <g fill="none" stroke="grey" strokeWidth=".02">
-        <CirclePath fill={theme.inner} {...circleProps}
-          angle={0}/>
-        <CirclePath fill={theme.outer} {...circleProps} 
-          angle={Math.PI}/>
+        <CirclePath  {...circleProps} angle={0} z="true"
+          fwdProps={fwdInner} />
+        <CirclePath {...circleProps} angle={Math.PI} z="true"
+          fwdProps={fwdOuter} />
       </g>
     </svg>
   );

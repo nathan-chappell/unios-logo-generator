@@ -14,7 +14,7 @@ import {
 
 function LogoSVG(props) {
   const { rings } = props;
-  const { inner, outer } = props.color.all;
+  const { inner, outer } = props.colors;
   const ringIds = Object.keys(rings);
   const innerRings = ringIds.map((key,index) => {
     const circleProps = {

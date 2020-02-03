@@ -3,9 +3,15 @@
   <head>
     <meta charset="utf-8"/>
     <link rel="stylesheet" href="style/components.css" />
-    <script src="/usr/local/lib/javascript/react.development.js" ></script>
-    <script src="/usr/local/lib/javascript/react-dom.development.js" ></script>
-    <script type="module" src="script/script.js"></script>
+    <!-- CDN links -->
+    <!--
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+     -->
+    <!-- local CDN links -->
+    <script src="./cdn/react.development.js" ></script>
+    <script src="./cdn/react-dom.development.js" ></script>
+    <script type="module" src="./script/script.js" defer></script>
   </head>
   <body>
     <div id="react-root"></div>

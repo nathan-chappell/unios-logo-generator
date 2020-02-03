@@ -41,7 +41,7 @@ function App(props) {
     <ReducerContext.Provider value={dispatch}>
       <div className="App">
         <ControlPanel rings={state.rings}/>
-        <LogoSVG rings={state.rings} color={state.color}/>
+        <LogoSVG rings={state.rings} colors={state.colors}/>
         <ColorPanel />
       </div>
     </ReducerContext.Provider>

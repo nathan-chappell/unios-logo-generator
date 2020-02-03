@@ -1,4 +1,4 @@
-// svgUtil.jsx
+// CirclePath.jsx
 
 export {
   CirclePath,
@@ -20,7 +20,7 @@ const ViewBox = "-.5 -.5 1 1";
  * @?angle : angle of rotation
  */
 function CirclePath(props) {
-  const { r, length, angle, fwdProps } = props;
+  const { r, length, angle, fwdProps, z } = props;
   const transform = `rotate(${-rad2deg(angle ? angle : 0)})`;
   const longSweepFlag = length >= .5 ? 1 : 0;
   let d;
@@ -36,6 +36,7 @@ function CirclePath(props) {
          A ${r} ${r} ${deg} ${longSweepFlag} 0 
            ${r*Math.cos(rad)} ${-r*Math.sin(rad)}`
   }
+  d += z ? ' z' : '';
   return (
     <path d={d} transform={transform} {...fwdProps}>
       {props.children}

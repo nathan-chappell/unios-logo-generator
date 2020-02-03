@@ -15,18 +15,20 @@ import {
  * need the control logic
  */
 function ColorController(props) {
-  const { theme } = props;
-  console.log('CC:', theme);
+  const { myTheme } = props;
   const dispatch = React.useContext(ReducerContext);
   const setColor = React.useCallback(() => {
     dispatch({
-      type: 'color',
-      id : 'all',
-      inner : theme.inner,
-      outer : theme.outer,
+      type : 'colors',
+      value : {
+        inner : myTheme.inner,
+        outer : myTheme.outer,
+      }
     });
-  },[dispatch,theme]);
+  },[dispatch,myTheme]);
   return (
-    <Colors theme={theme} onClick={setColor} />
+    <div onClick={setColor}>
+      <Colors myTheme={myTheme} />
+    </div>
   );
 }

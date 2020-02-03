@@ -12,14 +12,9 @@ import {
 } from "../view/logoProps.js";
 
 function ColorPanel(props) {
-  console.log(ColorController);
-  const colors = Object.keys(themes).map((theme) => {
-    <ColorController key={theme} theme={themes[theme]} />
-  });
-  Object.keys(themes).map((theme,key) => {
-    console.log(theme,themes[theme]);
-  });
-  console.log(colors);
+  const colors = Object.keys(themes).map((myTheme) => 
+    <ColorController key={myTheme} myTheme={themes[myTheme]} />
+  );
   return (
     <div className="ColorPanel">
       {colors}

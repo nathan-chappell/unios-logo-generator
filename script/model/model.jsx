@@ -17,15 +17,18 @@ const ReducerContext = React.createContext(null);
 
 const stateModel = {
   rings : {
-    'ring0' : { length : 1, angle : 0 },
-    'ring1' : { length : 1, angle : 0 },
-    'ring2' : { length : 1, angle : 0 },
-    'ring3' : { length : 1, angle : 0 },
+    ring0 : { length : 1, angle : 0 },
+    ring1 : { length : 1, angle : 0 },
+    ring2 : { length : 1, angle : 0 },
+    ring3 : { length : 1, angle : 0 },
   },
-  color : { 
-    all : { inner : 'grey', outer : 'black', },
-  }
+  colors : { 
+    inner : 'grey', 
+    outer : 'black',
+  },
 };
+
+Object.seal(stateModel);
 
 function verifyActionValue(attribute,value) {
   switch (attribute) {
@@ -42,12 +45,18 @@ function verifyActionValue(attribute,value) {
 }
 
 function verifyAction(state, action) {
-  if (action.type in state &&
-      action.id in state[action.type] &&
-      action.attribute in state[action.type][action.id] &&
-      verifyActionValue(action.attribute,action.value)) {
-    return true;
+  if (action.type == 'rings') {
+    if (action.id in state['rings'] &&
+        action.attribute in state['rings'][action.id] &&
+        verifyActionValue(action.attribute,action.value)) {
+      return true;
     }
+  } else if (action.type == 'colors') {
+    // verify color...
+    if (typeof action.value.inner == 'string' &&
+        typeof action.value.outer == 'string')
+    return true;
+  }
   return false;
 }
 
@@ -56,7 +65,13 @@ function reducer(oldstate, action) {
   //console.log('reducer:',state,action);
   if (!verifyAction(state, action)) {
     console.error('bad action!', action, state);
+    return;
+  } else if (action.type == 'rings') {
+    state[action.type][action.id][action.attribute] = action.value;
+  } else if (action.type == 'colors') {
+    state[action.type] = action.value;
+  } else {
+    throw new Error('unreachable');
   }
-  state[action.type][action.id][action.attribute] = action.value;
   return state;
 }

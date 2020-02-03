@@ -7,6 +7,6 @@
 
   display : grid;
   grid : "ControlPanel LogoSVG" 
-         ".            ColorPanel"
+         ".            ColorPanel" 75px
          / 300px 500px;
 }
