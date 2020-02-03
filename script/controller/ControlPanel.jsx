@@ -7,17 +7,11 @@ export {
 import {
   RingController,
 } from "../controller/RingController.js";
-import { 
-  reducer,
-  stateModel,
-  ReducerContext
-} from "../model/model.js";
 
 function ControlPanel(props) {
-  console.log('building controller');
-  let [state, dispatch] = React.useReducer(reducer,stateModel);
-  const { rings } = state;
-  let controllers = Object.keys(rings).map(
+  const { rings } = props;
+  const ringIds = Object.keys(rings);
+  const controllers = ringIds.map(
     (ringId) => {
       let { length, angle } = rings[ringId];
       return (
@@ -27,10 +21,8 @@ function ControlPanel(props) {
     });
   
   return (
-    <ReducerContext.Provider value={dispatch}>
       <div className="ControlPanel">
         {controllers}
       </div>
-    </ReducerContext.Provider>
   );
 }

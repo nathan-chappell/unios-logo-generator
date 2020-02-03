@@ -1,0 +1,12 @@
+/* App.css */
+
+.App {
+  margin : 0;
+  border : 0;
+  padding : 0;
+
+  display : grid;
+  grid : "ControlPanel LogoSVG" 
+         ".            ColorPanel"
+         / 300px 500px;
+}

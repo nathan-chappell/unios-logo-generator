@@ -1,6 +1,7 @@
-/* StateControllers.css */
+/* ControlPanel.css */
 
 .ControlPanel {
+  grid-area : ControlPanel;
   width : 250px;
   background : lightgrey;
   border-radius : 20px;

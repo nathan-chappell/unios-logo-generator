@@ -3,4 +3,7 @@
 @import "Slider.css";
 @import "Dial.css";
 @import "UtilityComponents.css";
-@import "StateControllers.css";
+@import "ControlPanel.css";
+@import "ColorPanel.css";
+@import "LogoSVG.css";
+@import "App.css";

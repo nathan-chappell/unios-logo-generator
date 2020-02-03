@@ -7,6 +7,7 @@ export {
 
 import {
   deg2rad,
+  rad2deg,
 } from "../util/util.js";
 
 const ViewBox = "-.5 -.5 1 1";
@@ -20,7 +21,8 @@ const ViewBox = "-.5 -.5 1 1";
  */
 function CirclePath(props) {
   const { r, length, angle, fwdProps } = props;
-  const transform = `rotate(${angle ? angle : 0})`;
+  const transform = `rotate(${-rad2deg(angle ? angle : 0)})`;
+  const longSweepFlag = length >= .5 ? 1 : 0;
   let d;
   // annoying special case for full circle
   if (length == 1) {
@@ -28,10 +30,11 @@ function CirclePath(props) {
          A ${r} ${r} 180 1 0 ${-r} ${0}
          A ${r} ${r} 180 1 0 ${r} ${0}`
   } else {
-    let deg = 360*length;
-    let rad = deg2rad(deg);
+    const deg = 360*length;
+    const rad = deg2rad(deg);
     d = `M ${r} ${0}
-         A ${r} ${r} ${a} 1 0 ${Math.cos(rad)} ${Math.sin(rad)}`
+         A ${r} ${r} ${deg} ${longSweepFlag} 0 
+           ${r*Math.cos(rad)} ${-r*Math.sin(rad)}`
   }
   return (
     <path d={d} transform={transform} {...fwdProps}>

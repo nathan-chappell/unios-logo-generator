@@ -19,22 +19,36 @@ import {
   RingController,
 } from "./controller/RingController.js";
 import { 
+  ColorController,
+} from "./controller/ColorController.js";
+import { 
   ControlPanel,
 } from "./controller/ControlPanel.js";
+import { 
+  ColorPanel,
+} from "./controller/ColorPanel.js";
+import {
+  LogoSVG,
+} from "./view/logoSVG.js";
 
 /*
- * show the damn Logo!
+ * Need a color picker...
  */
-function PreviewLogo(props) {
-}
 
-/*
- * dummy to lift the state above the Preview and ControlPanel
- */
-function TopLevel(props) {
+function App(props) {
+  let [state, dispatch] = React.useReducer(reducer,stateModel);
+  return (
+    <ReducerContext.Provider value={dispatch}>
+      <div className="App">
+        <ControlPanel rings={state.rings}/>
+        <LogoSVG rings={state.rings} color={state.color}/>
+        <ColorPanel />
+      </div>
+    </ReducerContext.Provider>
+  );
 }
 
 ReactDOM.render(
-  <ControlPanel />,
+  <App />,
   document.getElementById('react-root')
 );

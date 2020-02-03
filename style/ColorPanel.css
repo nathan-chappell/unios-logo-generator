@@ -1,0 +1,8 @@
+/* ColorPanel.css */
+
+.ColorPanel {
+  grid-area : ColorPanel;
+  height : 100px;
+  display : grid;
+  grid-template-columns : repeat(4,50px);
+}
