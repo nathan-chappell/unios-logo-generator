@@ -12,6 +12,22 @@ import {
   logoProps,
 } from "../view/logoProps.js";
 
+function FreqRotation(props) {
+  const { freq } = props;
+  //console.log('freq:', freq);
+  let animateProps = {
+    attributeName : 'transform',
+    type : 'rotate',
+    from : 0,
+    to : -freq*360,
+    dur : '1s',
+    repeatCount : 'indefinite',
+    accumulate : 'sum',
+    additive : 'sum',
+  };
+  return <animateTransform {...animateProps} />;
+}
+
 function LogoSVG(props) {
   const { rings } = props;
   const { inner, outer } = props.colors;
@@ -29,19 +45,10 @@ function LogoSVG(props) {
       length : rings[key].length,
       phase : rings[key].phase,
     }
-    const animateProps = {
-      attributeName : "transform",
-      type : "rotate",
-      from : 0,
-      to : 360,
-      //dur : `${rings[key].period}s`
-      dur : "1s",
-      repeatCount : "indefinite",
-    };
     return (
       <g key={key}>
         <CirclePath {...circleProps} />
-        <animateTransform {...animateProps} />
+        <FreqRotation freq={rings[key].freq} />
       </g>
     );
   });

@@ -6,6 +6,8 @@ export {
   roundDigits,
   rad2deg,
   deg2rad,
+  freq2deg,
+  deg2freq,
 };
 
 function clamp(min,val,max) {
@@ -22,6 +24,19 @@ function deg2rad(deg) {
 
 function rad2deg(rad) {
   return rad*180/Math.PI;
+}
+
+// maxFreq : rotations per second
+const maxFreq = 1;
+
+function freq2deg(freq) {
+  freq = freq >= 0 ? freq : maxFreq*2 + freq;
+  return freq*180/maxFreq;
+}
+
+function deg2freq(deg) {
+  deg = deg > 180 ? deg-360 : deg;
+  return maxFreq*deg / 180
 }
 
 // percentage converter

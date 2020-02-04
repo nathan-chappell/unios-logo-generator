@@ -19,28 +19,38 @@
    * The Dial has a viewbox set to preserve its aspect ratio.
    * keep the dial-row and dial-column the same height/width
    */
-  grid : "Slider Dial"   75px
-         "SInput DInput" 25px
-         / 1fr   75px;
+  grid : "length  phase  freq"   75px
+         "lengthI phaseI freqI" 25px
+         / 1fr    75px   75px;
 }
 
-.RingCSlider {
-  grid-area : Slider;
+.RingCSliderLength {
+  grid-area : length;
   align-self : center;
   height : 100%;
   width : 100%;
 }
-.RingCSliderInput {
-  grid-area : SInput;
+.RingCSliderLengthInput {
+  grid-area : lengthI;
   justify-self : center;
   width : 4em;
-
 }
-.RingCDial {
-  grid-area : Dial;
+.RingCDialPhase {
+  grid-area : phase;
 }
-.RingCDialInput {
-  grid-area : DInput;
+.RingCDialPhaseInput {
+  grid-area : phaseI;
   justify-self : center;
   width : 4em;
+}
+.RingCDialFreq {
+  grid-area : freq;
+}
+.RingCDialFreqInput {
+  grid-area : freqI;
+  justify-self : center;
+  width : 4em;
+}
+.InputError {
+  color : red;
 }

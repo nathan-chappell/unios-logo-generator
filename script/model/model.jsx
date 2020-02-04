@@ -1,6 +1,7 @@
 // model.jsx
 
 export { 
+  verifyActionValue,
   reducer,
   stateModel,
   ReducerContext
@@ -10,17 +11,19 @@ const ReducerContext = React.createContext(null);
 
 /*
  * state = {
- *  rings : { id : { lengthPct, phase, period } }
+ *  rings : { id : { length(%), phase(deg), freq(hz) } }
  *  color : { inner : color, outer : color }
  * }
+ * 
+ * negative freq indicates clockwise turning
  */
 
 const stateModel = {
   rings : {
-    ring0 : { length : 1, phase : 0, period : 0 },
-    ring1 : { length : 1, phase : 0, period : 0 },
-    ring2 : { length : 1, phase : 0, period : 0 },
-    ring3 : { length : 1, phase : 0, period : 0 },
+    ring0 : { length : 1, phase : 0, freq : 0 },
+    ring1 : { length : 1, phase : 0, freq : 0 },
+    ring2 : { length : 1, phase : 0, freq : 0 },
+    ring3 : { length : 1, phase : 0, freq : 0 },
   },
   colors : { 
     inner : 'grey', 
@@ -38,7 +41,11 @@ function verifyActionValue(attribute,value) {
     }
     case 'phase' : {
       return typeof value == 'number' &&
-             0 <= value && value < Math.PI*2;
+             0 <= value && value <= 360;
+    }
+    case 'freq' : {
+      return typeof value == 'number' &&
+             -2 <= value && value <= 2;
     }
     default : return true; // checking color values...
   }
@@ -65,7 +72,7 @@ function reducer(oldstate, action) {
   //console.log('reducer:',state,action);
   if (!verifyAction(state, action)) {
     console.error('bad action!', action, state);
-    return;
+    return state;
   } else if (action.type == 'rings') {
     state[action.type][action.id][action.attribute] = action.value;
   } else if (action.type == 'colors') {

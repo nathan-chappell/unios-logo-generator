@@ -9,6 +9,8 @@ import {
   roundDigits,
   deg2rad,
   rad2deg,
+  freq2deg,
+  deg2freq,
 } from "../util/util.js";
 import { 
   MouseTracker, 
@@ -16,82 +18,113 @@ import {
 } from "../controller/MouseTracker.js";
 import {
   Slider,
-  getCalcLengthCb,
 } from "../view/Slider.js";
 import {
   Dial,
-  getCalcAngleCb,
 } from "../view/Dial.js";
 import {
+  verifyActionValue,
   ReducerContext
 } from "../model/model.js";
 
-function LengthControlls(dispatch,action,ref) {
+/*
+ * getValFromControl => controlVal2ModelVal =>
+ * modelVal2ControlVal =>
+ */
 
+function ControlFragment(
+  action,
+  props,
+  inputProps,
+  converters
+) {
+  const {value, name, Component } = props;
+  const {model2component, component2model } = converters;
+  const dispatch = React.useContext(ReducerContext);
+  const ref = React.useRef(null);
+  const [invalid,setInvalid] = React.useState(null);
+
+  function _setVal(x) {
+    dispatch({ ...action, value : x, });
+  };
+
+  const moveCallback = React.useCallback((pos) => {
+    _setVal(component2model(Component.getValFromRef(ref,pos)));
+  },[ref.current]);
+
+  function inputChange(e) {
+    const _value = e.target.valueAsNumber;
+    if (verifyActionValue(action.attribute,_value)) {
+      if (invalid) {
+        setInvalid(null);
+      }
+      _setVal(_value);
+    } else {
+      console.log('bad _value:', _value);
+      setInvalid({value : event.target.value});
+    }
+  }
+
+  action.type = 'rings';
+  inputProps.type = 'number';
+  inputProps.className = 'RingC' + name + 'Input';
+  if (invalid) {
+    inputProps.className += ' InputError';
+    inputProps.value = invalid.value;
+  }
+
+  return (
+    <>
+      <MouseTracker moveCallback={moveCallback} 
+          className={'RingC' + name}>
+        <Component ref={ref} value={model2component(value)} />
+      </MouseTracker>
+      <input {...inputProps} onChange={inputChange}/>
+    </>
+  );
+}
+
+/*
+ * input should reflect model value,
+ * the geometric component may require conversion...
+ */
+
+//const _ID = (x) => x;
+const _ID = (x) => {
+  return x;
 }
 
 function RingController(props) {
-  const { length, phase, ringId} = props;
-  const dispatch = React.useContext(ReducerContext);
-  const sliderRef = React.useRef(null);
+  const { length, phase, freq, ringId} = props;
   const dialRef = React.useRef(null);
-  const action = {
-      type : 'rings',
-      id : ringId,
-  };
+  const dispatch = React.useContext(ReducerContext);
 
-  // length handling
-  const _setLength = (x) => {
-    dispatch({
-      ...action,
-      attribute : 'length',
-      value : roundDigits(x,3),
-    });
-  }
-  // tricky...
-  const sliderMoveCb = React.useCallback(
-    (() => {
-      const calc = getCalcLengthCb(sliderRef);
-      return (pos) => {
-        _setLength(calc(pos))
-      };
-    })(),[sliderRef.current]);
+  const lengthControls = ControlFragment(
+    { id : ringId, attribute : 'length' },
+    { value : length, name : 'SliderLength', Component : Slider },
+    { value : length, min : 0, max : 1, step : .001, },
+    { model2component : _ID, component2model : _ID, }
+  );
 
-  // phase handling
-  const _setAngle = (x) => {
-    dispatch({
-      ...action,
-      attribute : 'phase',
-      value : roundDigits(x,3),
-    });
-  }
-  // tricky...
-  const dialMoveCb = React.useCallback(
-    (() => {
-      const calc = getCalcAngleCb(dialRef);
-      return (pos) => {
-        _setAngle(calc(pos))
-      };
-    })(),[dialRef.current]);
+  const phaseControls = ControlFragment(
+    { id : ringId, attribute : 'phase'},
+    { value : phase, name : 'DialPhase', Component : Dial, },
+    { value : roundDigits(phase,1), min : 0, max : 360, step : .1, },
+    { model2component : _ID, component2model : _ID, }
+  );
+
+  const freqControls = ControlFragment(
+    { id : ringId, attribute : 'freq'},
+    { value : freq, name : 'DialFreq', Component : Dial, },
+    { value : freq, min : -2, max : 2, step : .01, },
+    { model2component : freq2deg, component2model : deg2freq, }
+  );
 
   return (
     <div className="RingC">
-      <MouseTracker moveCallback={sliderMoveCb} 
-        className="RingCSlider">
-        <Slider ref={sliderRef} length={length} />
-      </MouseTracker>
-      <input type="number" value={length} min={0} max={1} step={.001}
-             onChange={(e) => _setLength(e.target.value)}
-             className="RingCSliderInput" />
-      <MouseTracker moveCallback={dialMoveCb} 
-        className="RingCDial">
-        <Dial ref={dialRef} phase={phase} />
-      </MouseTracker>
-      <input type="number" value={roundDigits(rad2deg(phase),1)} 
-             min={0} max={360} step={.1} onChange={
-               (e) => _setAngle(deg2rad(e.target.value))
-             }
-             className="RingCDialInput" />
+      {lengthControls}
+      {phaseControls}
+      {freqControls}
     </div>
   );
 }

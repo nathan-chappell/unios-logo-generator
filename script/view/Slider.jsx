@@ -3,7 +3,6 @@
 export { 
   Slider,
   SliderAttributes,
-  getCalcLengthCb
 };
 
 import { 
@@ -26,29 +25,24 @@ SliderAttributes.rightPad = .5 + SliderAttributes.width/2;
 /*
  * get callback to calculate new slider position
  */
-function getCalcLengthCb(ref) {
-  return (pos) => {
-    //console.log('length callback');
-    if (ref.current == null) {
-      console.error('Slider move callback null ref');
-      return;
-    }
-    /*
-     * Calculate position of mouse relative to the actual slider bar
-     */
-    let bbox = ref.current.getBoundingClientRect();
-    let left = bbox.left + bbox.width*SliderAttributes.leftPad;
-    let width = bbox.width * SliderAttributes.width;
-    return(clamp(0,(pos.x - left)/width,1));
-  };
+function getLength(ref, pos) {
+  //console.log('length callback');
+  if (ref.current == null) {
+    console.error('Slider move callback null ref');
+    return;
+  }
+  /*
+   * Calculate position of mouse relative to the actual slider bar
+   */
+  let bbox = ref.current.getBoundingClientRect();
+  let left = bbox.left + bbox.width*SliderAttributes.leftPad; let width = bbox.width * SliderAttributes.width;
+  return(clamp(0,(pos.x - left)/width,1));
 }
 
 
 let Slider = React.forwardRef((props, ref) => {
-  ref = ref || {};
   const {width, height, swidth, leftPad, rightPad} = SliderAttributes;
-  const { length } = props;
-  // position is a _Percentage
+  const { value } = props;
 
   function getBack() {
     return toPct({ 
@@ -61,8 +55,8 @@ let Slider = React.forwardRef((props, ref) => {
 
   function getFront() {
     return toPct({ 
-      x1: leftPad + length*width - swidth,
-      x2: leftPad + length*width + swidth,
+      x1: leftPad + value*width - swidth,
+      x2: leftPad + value*width + swidth,
       y1: height,
       y2: height
     });
@@ -75,3 +69,5 @@ let Slider = React.forwardRef((props, ref) => {
     </svg>
   );
 });
+
+Slider.getValFromRef = getLength;
