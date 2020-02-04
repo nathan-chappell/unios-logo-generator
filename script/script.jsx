@@ -31,6 +31,21 @@ import {
   LogoSVG,
 } from "./view/logoSVG.js";
 
+/*
+ * NEXT:
+ * export to svg 
+ *    blob -> file or something
+ * animations:
+ *    stateChain: stateLink
+ *    stateLink: state, next, transition
+ * styling:
+ *    make it more obvious what does what
+ * static page generation:
+ *    babel script:
+ *      es6-modules + jsx => commonjs-modules + js
+ *      ReactDOMServer that shit
+ */
+
 function App(props) {
   let [state, dispatch] = React.useReducer(reducer,stateModel);
   return (
