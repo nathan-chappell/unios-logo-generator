@@ -10,6 +10,9 @@ import {
   clamp, 
   roundDigits,
 } from "../util/util.js";
+import {
+  mouseTracker
+} from "../controller/MouseTracker.js";
 
 /*
  * Consistent properties of the Slider, units are percent
@@ -42,7 +45,17 @@ function getLength(ref, pos) {
 
 let Slider = React.forwardRef((props, ref) => {
   const {width, height, swidth, leftPad, rightPad} = SliderAttributes;
-  const { value } = props;
+  const { value, callback } = props;
+  const frontLineRef = React.useRef(null);
+  const backLineRef = React.useRef(null);
+
+  React.useEffect(() => {
+    mouseTracker(frontLineRef,callback);
+  },[frontLineRef.current]);
+
+  React.useEffect(() => {
+    mouseTracker(backLineRef,callback);
+  },[backLineRef.current]);
 
   function getBack() {
     return toPct({ 
@@ -64,8 +77,10 @@ let Slider = React.forwardRef((props, ref) => {
 
   return (
     <svg className="SliderSVG" ref={ref}>
-      <line {...getBack()} className="SliderBack" />
-      <line {...getFront()} className="SliderFront" />
+      <line {...getBack()} ref={backLineRef} 
+            className="SliderBack" />
+      <line {...getFront()} ref={frontLineRef} 
+            className="SliderFront" />
     </svg>
   );
 });

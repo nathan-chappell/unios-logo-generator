@@ -1,19 +1,8 @@
 // script.jsx
 
-import { 
-  reducer,
-  stateModel,
-  ReducerContext
-} from "./model/model.js";
-import { 
-  ControlPanel,
-} from "./controller/ControlPanel.js";
-import { 
-  ColorPanel,
-} from "./controller/ColorPanel.js";
 import {
-  LogoSVG,
-} from "./view/logoSVG.js";
+  App
+} from "./controller/App.js";
 
 /*
  * NEXT:
@@ -36,7 +25,7 @@ import {
 } from "./util/util.js";
 import {
   logoProps,
-} from "../view/logoProps.js";
+} from "./view/logoProps.js";
 
 /*
  * transitionProps = { dur, keySpline, begin, calcmode, fill}
@@ -45,14 +34,14 @@ function RingTransition(props) {
   const { oldring, newring, ringId } = props;
   let transitionProps = React.useContext(TransitionProps);
   const pathAnimationProps = {
-    {...transitionProps},
+    ...transitionProps,
     href : getOuterPathID(ringId),
     attributeName : 'd',
     from : getCircle_d(logoProps.radii[oldring.ringId]),
     to : getCircle_d(logoProps.radii[newring.ringId]),
   };
   const rotationAnimationProps = {
-    {...transitionProps},
+    ...transitionProps,
     href : getOuterRotationID(ringId),
     type : 'rotate',
     /*
@@ -60,9 +49,7 @@ function RingTransition(props) {
     from : oldring.
     */
   };
-  return (
-    <animate 
-  );
+  return ;
 }
 
 function StateTransitions(props) {
@@ -71,8 +58,9 @@ function StateTransitions(props) {
   return (
     <TransitionProps.Provider value={transitionProps}>
       <RingTransitions oldrings={oldstate.rings} 
-            newrings={newstate.rings}
+                       newrings={newstate.rings} />
     </TransitionProps.Provider>
+  );
 }
 
 const TransitionProps = React.createContext(null);
@@ -96,21 +84,11 @@ function TransitionController(props) {
   );
 }
 
-function App(props) {
-  let [state, dispatch] = React.useReducer(reducer,stateModel);
-  return (
-    <ReducerContext.Provider value={dispatch}>
-      <div className="App">
-        <ControlPanel rings={state.rings}/>
-        <LogoSVG rings={state.rings} colors={state.colors}/>
-        <ColorPanel />
-        <TransitionController />
-      </div>
-    </ReducerContext.Provider>
-  );
-}
 
 ReactDOM.render(
-  <App />,
+  <div>
+    <div> foo</div>
+    <App />
+  </div>,
   document.getElementById('react-root')
 );

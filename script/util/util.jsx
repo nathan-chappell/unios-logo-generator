@@ -9,7 +9,13 @@ export {
   freq2deg,
   deg2freq,
   getCircle_d,
+  getOuterPathID,
+  getOuterRotationID,
 };
+
+function getOuterRotationID(ringId) {
+  return `${ringId}.Rotation`;
+}
 
 function getOuterPathID(ringId) {
   return `${ringId}.OuterPath`;

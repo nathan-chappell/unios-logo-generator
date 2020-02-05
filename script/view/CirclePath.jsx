@@ -3,11 +3,13 @@
 export {
   CirclePath,
   ViewBox,
+  FreqRotation,
 };
 
 import {
   deg2rad,
   rad2deg,
+  getOuterRotationID,
   getCircle_d,
 } from "../util/util.js";
 
@@ -47,7 +49,7 @@ function CirclePath(props) {
   let d = getCircle_d(length,r);
   d += z ? ' z' : '';
   return (
-    <path d={d} transform={transform} id={id}>
+    <path d={d} transform={transform} id={id} {...fwdProps}>
       {props.children}
     </path>
   );

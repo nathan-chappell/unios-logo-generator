@@ -12,10 +12,6 @@ import {
   freq2deg,
   deg2freq,
 } from "../util/util.js";
-import { 
-  MouseTracker, 
-  Centerer
-} from "../controller/MouseTracker.js";
 import {
   Slider,
 } from "../view/Slider.js";
@@ -48,7 +44,7 @@ function ControlFragment(
     dispatch({ ...action, value : x, });
   };
 
-  const moveCallback = React.useCallback((pos) => {
+  const callback = React.useCallback((pos) => {
     _setVal(component2model(Component.getValFromRef(ref,pos)));
   },[ref.current]);
 
@@ -75,10 +71,8 @@ function ControlFragment(
 
   return (
     <>
-      <MouseTracker moveCallback={moveCallback} 
-          className={'RingC' + name}>
-        <Component ref={ref} value={model2component(value)} />
-      </MouseTracker>
+      <Component ref={ref} value={model2component(value)} 
+                 callback={callback} />
       <input {...inputProps} onChange={inputChange}/>
     </>
   );

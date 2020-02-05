@@ -1,29 +1,28 @@
 // MouseTracker.jsx
 
 export {
-  MouseTracker, 
-  Centerer, 
-  ShowMouse 
+  mouseTracker, 
 };
 
 /*
  * Component wrapper that tracks the mouse and registers new positions
  * and wheels.
  * @prop.moveCallback callback for mouse onmove event
- * @prop.wheelCallback
  *    callback for mouse onwheel event
  */
-function MouseTracker(props) {
-  const nop = () => {};
-  const moveCallback = props.moveCallback || nop;
-  const wheelCallback = props.wheelCallback || nop;
-  const className = props.className || 'MouseTracker';
-
+function mouseTracker(ref,callback) {
   // events which start tracking, attached to the component
   const triggerEvents = {
-    onMouseDown : startTracking,
-    onWheel : wheelCallback
+    'mousedown' : startTracking,
   };
+
+  for (let e in triggerEvents) {
+    if (!ref.current) {
+      console.warn('MT: no current');
+      break;
+    }
+    ref.current.addEventListener(e,triggerEvents[e]);
+  }
 
   // events involved in tracking, attached to the window
   const trackEvents = {
@@ -38,7 +37,7 @@ function MouseTracker(props) {
     if (event.buttons == 0) {
       finishTracking();
     } else {
-      moveCallback({x:event.clientX, y:event.clientY});
+      callback({x:event.clientX, y:event.clientY});
     }
   }
 
@@ -49,42 +48,25 @@ function MouseTracker(props) {
     }
   }
 
-  function startTracking() {
+  function startTracking(event) {
+    track(event);
     //console.log('start tracking');
     for (let e in trackEvents) {
       window.addEventListener(e,trackEvents[e]);
     }
   }
-
-  // ??? uncertain why draggable is necessary, but it seems to be
-  return (
-    <div draggable="false" {...triggerEvents} className={className}>
-      {props.children}
-    </div>
-  )
-}
-
-function Centerer(props) {
-  return (
-    <div className="centerer">
-      <div className="spacer"></div>
-        {props.children}
-      <div className="spacer"></div>
-    </div>
-  );
 }
 
 /*
  * Demo the mouse tracker
+ * (uses old interface)
  */
+/*
 function ShowMouse(props) {
   const [pos,setPos] = React.useState({x:0,y:0});
   //console.log('showMouse:', pos);
   const callbacks = {
-    moveCallback : setPos,
-    wheelCallback : (e) => {
-      setPos({ x:(pos.x + e.deltaX), y:(pos.y + e.deltaY) });
-    }
+    callback : setPos,
   }
   return (
     <MouseTracker {...callbacks}>
@@ -92,3 +74,4 @@ function ShowMouse(props) {
     </MouseTracker>
   );
 }
+*/

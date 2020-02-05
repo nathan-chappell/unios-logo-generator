@@ -37,7 +37,7 @@ function LogoSVG(props) {
     }
     const freqProps = {
       id : getOuterRotationID(ringId),
-      freq : {rings[ringId].freq},
+      freq : rings[ringId].freq,
     };
     return (
       <g key={ringId}>

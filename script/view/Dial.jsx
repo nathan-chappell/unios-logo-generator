@@ -15,6 +15,9 @@ import {
   ViewBox,
   CirclePath,
 } from "../view/CirclePath.js";
+import {
+  mouseTracker
+} from "../controller/MouseTracker.js";
 
 function getThetaDeg(ref, x, y) {
   if (ref.current == null) {
@@ -37,15 +40,21 @@ function getAngle(ref,pos) {
   return(clamp(0,theta,360));
 }
 
-let Dial = React.forwardRef((props,ref) => {
+const Dial = React.forwardRef((props,ref) => {
+  const { callback } = props;
   const transform = `rotate(${-props.value})`;
-  //console.log('dial transform:',transform);
-  const r = .45;
-  let fwdProps = { className : "DialCircle" };
+  const r = .35;
+  const fwdProps = { className : "DialCircle" };
+
+  React.useEffect(() => {
+    mouseTracker(ref,callback);
+  },[ref.current]);
+
   return (
-    <svg className="DialSVG" ref={ref} viewBox={ViewBox}
-         transform={transform}>
-      <CirclePath r={r} length={1} fwdProps={fwdProps}/>
+    <svg className="DialSVG" viewBox={ViewBox} transform={transform}> 
+      <g ref={ref} pointerEvents="visibleFill">
+        <CirclePath r={r} length={1} fwdProps={fwdProps}/>
+      </g>
       <line x1=".1" x2={r} y1="0" y2="0" className="DialLine" />
     </svg>
   );
