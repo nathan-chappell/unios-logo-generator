@@ -8,9 +8,31 @@ export {
 import {
   deg2rad,
   rad2deg,
+  getCircle_d,
 } from "../util/util.js";
 
 const ViewBox = "-.5 -.5 1 1";
+
+function FreqRotation(props) {
+  const { freq, ringId } = props;
+  //console.log('freq:', freq);
+  let animateProps = {
+    id : getOuterRotationID(ringId),
+    attributeName : 'transform',
+    type : 'rotate',
+    from : 0,
+    to : -freq*360,
+    dur : '1s',
+    repeatCount : 'indefinite',
+    accumulate : 'sum',
+    additive : 'sum',
+  };
+  return (
+    <animateTransform {...animateProps}>
+      {props.children}
+    </animateTransform>
+  );
+}
 
 /*
  * assumes viewbox="-.5 -.5 1 1"
@@ -20,25 +42,12 @@ const ViewBox = "-.5 -.5 1 1";
  * @?phase : phase of rotation
  */
 function CirclePath(props) {
-  const { r, length, phase, fwdProps, z } = props;
+  const { id, r, length, phase, fwdProps, z } = props;
   const transform = `rotate(${-(phase ? phase : 0)})`;
-  const longSweepFlag = length >= .5 ? 1 : 0;
-  let d;
-  // annoying special case for full circle
-  if (length == 1) {
-    d = `M ${r} ${0}
-         A ${r} ${r} 180 1 0 ${-r} ${0}
-         A ${r} ${r} 180 1 0 ${r} ${0}`
-  } else {
-    const deg = 360*length;
-    const rad = deg2rad(deg);
-    d = `M ${r} ${0}
-         A ${r} ${r} ${deg} ${longSweepFlag} 0 
-           ${r*Math.cos(rad)} ${-r*Math.sin(rad)}`
-  }
+  let d = getCircle_d(length,r);
   d += z ? ' z' : '';
   return (
-    <path d={d} transform={transform} {...fwdProps}>
+    <path d={d} transform={transform} id={id}>
       {props.children}
     </path>
   );

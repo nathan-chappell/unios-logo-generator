@@ -5,50 +5,44 @@ export {
 };
 
 import {
+  FreqRotation,
   CirclePath,
   ViewBox,
 } from "../view/CirclePath.js";
 import {
   logoProps,
 } from "../view/logoProps.js";
-
-function FreqRotation(props) {
-  const { freq } = props;
-  //console.log('freq:', freq);
-  let animateProps = {
-    attributeName : 'transform',
-    type : 'rotate',
-    from : 0,
-    to : -freq*360,
-    dur : '1s',
-    repeatCount : 'indefinite',
-    accumulate : 'sum',
-    additive : 'sum',
-  };
-  return <animateTransform {...animateProps} />;
-}
+import {
+  getOuterPathID,
+  getOuterRotationID,
+} from "../util/util.js";
 
 function LogoSVG(props) {
   const { rings } = props;
   const { inner, outer } = props.colors;
   const ringIds = Object.keys(rings);
-  const innerRings = ringIds.map((key,index) => {
+  const innerRings = ringIds.map((ringId,index) => {
     const circleProps = {
       r : logoProps.radii[index],
       length : 1,
     }
-    return <CirclePath key={key} {...circleProps} />;
+    return <CirclePath key={ringId} {...circleProps} />;
   });
-  const outerRings = ringIds.map((key,index) => {
+  const outerRings = ringIds.map((ringId,index) => {
     const circleProps = {
+      id : getOuterPathID(ringId),
       r : logoProps.radii[index],
-      length : rings[key].length,
-      phase : rings[key].phase,
+      length : rings[ringId].length,
+      phase : rings[ringId].phase,
     }
+    const freqProps = {
+      id : getOuterRotationID(ringId),
+      freq : {rings[ringId].freq},
+    };
     return (
-      <g key={key}>
+      <g key={ringId}>
         <CirclePath {...circleProps} />
-        <FreqRotation freq={rings[key].freq} />
+        <FreqRotation  {...freqProps} />
       </g>
     );
   });

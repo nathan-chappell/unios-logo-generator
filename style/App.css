@@ -6,7 +6,7 @@
   padding : 0;
 
   display : grid;
-  grid : "ControlPanel LogoSVG" 
-         ".            ColorPanel" 75px
+  grid : "ControlPanel LogoSVG    TransitionController" 
+         ".            ColorPanel TransitionController" 
          / 300px 500px;
 }

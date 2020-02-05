@@ -8,7 +8,23 @@ export {
   deg2rad,
   freq2deg,
   deg2freq,
+  getCircle_d,
 };
+
+function getOuterPathID(ringId) {
+  return `${ringId}.OuterPath`;
+}
+
+function getCircle_d(length,r) {
+  // annoying special case for full circle
+  length = Math.min(.999999999, length);
+  const longSweepFlag = length >= .5 ? 1 : 0;
+  const deg = 360*length;
+  const rad = deg2rad(deg);
+  return `M ${r} ${0}
+          A ${r} ${r} ${deg} ${longSweepFlag} 0 
+            ${r*Math.cos(rad)} ${-r*Math.sin(rad)}`
+}
 
 function clamp(min,val,max) {
   return val < min ? min : val > max ? max : val;

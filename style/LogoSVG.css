@@ -1,6 +1,7 @@
 /* LogoSVG.css */
 
 .LogoSVG {
+  border : solid grey 5px;
   background-color : white;
   grid-area : LogoSVG;
 }

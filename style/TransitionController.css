@@ -1,0 +1,7 @@
+/* TransitionController.css */
+
+.TransitionController {
+  border : solid grey 5px;
+  width : 300px;
+  grid-area : TransitionController;
+}
