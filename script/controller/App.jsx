@@ -5,9 +5,9 @@ export {
 };
 
 import { 
-  reducer,
-  stateModel,
-  ReducerContext
+  stateReducer,
+  getStateModel,
+  StateReducerContext
 } from "../model/model.js";
 import { 
   ControlPanel,
@@ -15,19 +15,35 @@ import {
 import { 
   ColorPanel,
 } from "../controller/ColorPanel.js";
+import { 
+  transitionReducer,
+  getTransitionModel,
+  TransitionDiagram,
+  TransitionReducerContext,
+} from "../model/transitions.js";
+import {
+  TransitionController,
+} from "../controller/TransitionController.js";
 import {
   LogoSVG,
 } from "../view/logoSVG.js";
 
 function App(props) {
-  let [state, dispatch] = React.useReducer(reducer,stateModel);
+  const [state, dispatch] = React.useReducer(stateReducer,getStateModel());
+  const [transitionDiagram, transitionDispatch] = 
+      React.useReducer(transitionReducer,new TransitionDiagram());
+  console.log(state);
   return (
-    <ReducerContext.Provider value={dispatch}>
-      <div className="App">
+    <div className="App">
+      <StateReducerContext.Provider value={dispatch}>
         <ControlPanel rings={state.rings}/>
         <LogoSVG rings={state.rings} colors={state.colors}/>
         <ColorPanel />
-      </div>
-    </ReducerContext.Provider>
+      </StateReducerContext.Provider>
+      <TransitionReducerContext.Provider value={transitionDispatch}>
+        <TransitionController 
+            transition={transitionDiagram.getCurTransition()}/>
+      </TransitionReducerContext.Provider>
+    </div>
   );
 }

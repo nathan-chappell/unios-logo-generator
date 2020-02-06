@@ -20,8 +20,8 @@ import {
   Dial,
 } from "../view/Dial.js";
 import {
-  verifyActionValue,
-  ReducerContext,
+  verifyStateAction,
+  StateReducerContext,
   maxFreq,
 } from "../model/model.js";
 
@@ -58,7 +58,7 @@ function VerifiedInput(props) {
 function getPhaseInputProps(_dispatch, value) {
   return {
     setValue : (val) => _dispatch('phase',val),
-    verify : (val) => verifyActionValue('phase',val),
+    verify : (val) => verifyStateAction('phase',val),
     fwdProps : {
       value : roundDigits(value,1),
       min : 0,
@@ -73,7 +73,7 @@ function getPhaseInputProps(_dispatch, value) {
 function getFreqInputProps(_dispatch, value) {
   return {
     setValue : (val) => _dispatch('freq',val),
-    verify : (val) => verifyActionValue('freq',val),
+    verify : (val) => verifyStateAction('freq',val),
     fwdProps : {
       value : roundDigits(value,2),
       min : -maxFreq,
@@ -88,7 +88,7 @@ function getFreqInputProps(_dispatch, value) {
 function getLengthInputProps(_dispatch, value) {
   return {
     setValue : (val) => _dispatch('length',val),
-    verify : (val) => verifyActionValue('length',val),
+    verify : (val) => verifyStateAction('length',val),
     fwdProps : {
       value : roundDigits(value,3),
       min : 0,
@@ -117,7 +117,7 @@ function getComponentProps(_dispatch, name, value) {
 
 function RingController(props) {
   const { length, phase, freq, ringId} = props;
-  const dispatch = React.useContext(ReducerContext);
+  const dispatch = React.useContext(StateReducerContext);
 
   const _dispatch = React.useCallback((attribute,value) => {
     dispatch({

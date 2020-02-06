@@ -1,14 +1,14 @@
 // model.jsx
 
 export { 
-  verifyActionValue,
-  reducer,
-  stateModel,
-  ReducerContext,
+  verifyStateAction,
+  stateReducer,
+  getStateModel,
+  StateReducerContext,
   maxFreq,
 };
 
-const ReducerContext = React.createContext(null);
+const StateReducerContext = React.createContext(null);
 
 /*
  * state = {
@@ -19,24 +19,24 @@ const ReducerContext = React.createContext(null);
  * negative freq indicates clockwise turning
  */
 
-const stateModel = {
-  rings : {
-    ring0 : { length : 1, phase : 0, freq : 0 },
-    ring1 : { length : 1, phase : 0, freq : 0 },
-    ring2 : { length : 1, phase : 0, freq : 0 },
-    ring3 : { length : 1, phase : 0, freq : 0 },
-  },
-  colors : { 
-    inner : 'grey', 
-    outer : 'black',
-  },
+function getStateModel() {
+  return {
+    rings : {
+      ring0 : { length : 1, phase : 0, freq : 0 },
+      ring1 : { length : 1, phase : 0, freq : 0 },
+      ring2 : { length : 1, phase : 0, freq : 0 },
+      ring3 : { length : 1, phase : 0, freq : 0 },
+    },
+    colors : { 
+      inner : 'grey', 
+      outer : 'black',
+    },
+  }
 };
-
-Object.seal(stateModel);
 
 const maxFreq = 2;
 
-function verifyActionValue(attribute,value) {
+function verifyStateAction(attribute,value) {
   switch (attribute) {
     case 'length': {
       return typeof value == 'number' &&
@@ -58,7 +58,7 @@ function verifyAction(state, action) {
   if (action.type == 'rings') {
     if (action.id in state['rings'] &&
         action.attribute in state['rings'][action.id] &&
-        verifyActionValue(action.attribute,action.value)) {
+        verifyStateAction(action.attribute,action.value)) {
       return true;
     }
   } else if (action.type == 'colors') {
@@ -70,9 +70,9 @@ function verifyAction(state, action) {
   return false;
 }
 
-function reducer(oldstate, action) {
+function stateReducer(oldstate, action) {
   let state = {...oldstate};
-  //console.log('reducer:',state,action);
+  //console.log('stateReducer:',state,action);
   if (!verifyAction(state, action)) {
     console.error('bad action!', action, state);
     return state;

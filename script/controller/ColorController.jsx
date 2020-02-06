@@ -8,7 +8,7 @@ import {
   Colors,
 } from "../view/Colors.js";
 import {
-  ReducerContext
+  StateReducerContext
 } from "../model/model.js";
 
 /*
@@ -16,7 +16,7 @@ import {
  */
 function ColorController(props) {
   const { myTheme } = props;
-  const dispatch = React.useContext(ReducerContext);
+  const dispatch = React.useContext(StateReducerContext);
   const setColor = React.useCallback(() => {
     dispatch({
       type : 'colors',
