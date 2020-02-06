@@ -43,14 +43,15 @@ function FreqRotation(props) {
  * @length : percentage of circle to draw
  * @?phase : phase of rotation
  */
-function CirclePath(props) {
+const CirclePath = React.forwardRef((props, ref) => {
   const { id, r, length, phase, fwdProps, z } = props;
+  //console.log('CirclePath fwd:', fwdProps);
   const transform = `rotate(${-(phase ? phase : 0)})`;
   let d = getCircle_d(length,r);
   d += z ? ' z' : '';
   return (
-    <path d={d} transform={transform} id={id} {...fwdProps}>
+    <path ref={ref} d={d} transform={transform} id={id} {...fwdProps}>
       {props.children}
     </path>
   );
-}
+});

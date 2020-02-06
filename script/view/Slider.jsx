@@ -43,19 +43,28 @@ function getLength(ref, pos) {
 }
 
 
-let Slider = React.forwardRef((props, ref) => {
+function Slider(props) {
   const {width, height, swidth, leftPad, rightPad} = SliderAttributes;
   const { value, callback } = props;
-  const frontLineRef = React.useRef(null);
-  const backLineRef = React.useRef(null);
+  //const frontLineRef = React.useRef(null);
+  //const backLineRef = React.useRef(null);
+  const ref = React.useRef(null);
 
+  /*
   React.useEffect(() => {
     mouseTracker(frontLineRef,callback);
+    mouseTracker(backLineRef,(pos) => callback(getLength(ref,pos)));
   },[frontLineRef.current]);
+  */
 
+  /*
   React.useEffect(() => {
-    mouseTracker(backLineRef,callback);
+    mouseTracker(backLineRef,(pos) => callback(getLength(ref,pos)));
   },[backLineRef.current]);
+  */
+  React.useEffect(() => {
+    mouseTracker(ref,(pos) => callback(getLength(ref,pos)));
+  },[ref.current]);
 
   function getBack() {
     return toPct({ 
@@ -75,14 +84,17 @@ let Slider = React.forwardRef((props, ref) => {
     });
   }
 
+  const svgProps = {
+    className : "SliderSVG",
+    pointerEvents : "painted",
+  };
+
   return (
-    <svg className="SliderSVG" ref={ref}>
-      <line {...getBack()} ref={backLineRef} 
-            className="SliderBack" />
-      <line {...getFront()} ref={frontLineRef} 
-            className="SliderFront" />
+    <svg className={"SliderSVG"}>
+      <g pointerEvents="painted" ref={ref}>
+        <line {...getBack()} className="SliderBack" />
+        <line {...getFront()} className="SliderFront" />
+      </g>
     </svg>
   );
-});
-
-Slider.getValFromRef = getLength;
+};

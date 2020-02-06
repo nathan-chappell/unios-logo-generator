@@ -11,7 +11,18 @@ export {
   getCircle_d,
   getOuterPathID,
   getOuterRotationID,
+  addClassName,
+  _ID,
 };
+
+function _ID(x) { return x; }
+
+function addClassName(props,className) {
+  if (!props.className) {
+    props.className = '';
+  }
+  props.className += ' ' + className;
+}
 
 function getOuterRotationID(ringId) {
   return `${ringId}.Rotation`;

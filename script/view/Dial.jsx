@@ -10,6 +10,7 @@ import {
   clamp,
   roundDigits,
   rad2deg,
+  addClassName,
 } from "../util/util.js";
 import {
   ViewBox,
@@ -40,24 +41,33 @@ function getAngle(ref,pos) {
   return(clamp(0,theta,360));
 }
 
-const Dial = React.forwardRef((props,ref) => {
-  const { callback } = props;
-  const transform = `rotate(${-props.value})`;
+function Dial(props) {
+  const { callback, value, fwdProps } = props;
+  const ref = React.useRef(null);
   const r = .35;
-  const fwdProps = { className : "DialCircle" };
 
   React.useEffect(() => {
-    mouseTracker(ref,callback);
+    mouseTracker(ref,(pos) => callback(getAngle(ref,pos)));
   },[ref.current]);
 
+  addClassName(fwdProps,"DialSVG");
+  fwdProps.pointerEvents = "visibleFill";
+
+  const circleProps = {
+    className : "DialCircle",
+  };
+
+  const lineProps = {
+    className : "DialLine",
+    x1 : .1, y1 : 0,
+    x2 :  r,  y2 : 0,
+    transform : `rotate(${-value})`,
+  };
+
   return (
-    <svg className="DialSVG" viewBox={ViewBox} transform={transform}> 
-      <g ref={ref} pointerEvents="visibleFill">
-        <CirclePath r={r} length={1} fwdProps={fwdProps}/>
-      </g>
-      <line x1=".1" x2={r} y1="0" y2="0" className="DialLine" />
+    <svg {...fwdProps} viewBox={ViewBox}> 
+      <CirclePath ref={ref} r={r} length={1} fwdProps={circleProps}/>
+      <line {...lineProps} />
     </svg>
   );
-});
-
-Dial.getValFromRef = getAngle;
+}

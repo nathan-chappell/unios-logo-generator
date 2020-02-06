@@ -4,7 +4,8 @@ export {
   verifyActionValue,
   reducer,
   stateModel,
-  ReducerContext
+  ReducerContext,
+  maxFreq,
 };
 
 const ReducerContext = React.createContext(null);
@@ -32,6 +33,8 @@ const stateModel = {
 };
 
 Object.seal(stateModel);
+
+const maxFreq = 2;
 
 function verifyActionValue(attribute,value) {
   switch (attribute) {

@@ -24,29 +24,29 @@
          / 1fr    75px   75px;
 }
 
-.RingCSliderLength {
+.RingClength {
   grid-area : length;
   align-self : center;
   height : 100%;
   width : 100%;
 }
-.RingCSliderLengthInput {
+.RingClengthI {
   grid-area : lengthI;
   justify-self : center;
   width : 4em;
 }
-.RingCDialPhase {
+.RingCphase {
   grid-area : phase;
 }
-.RingCDialPhaseInput {
+.RingCphaseI {
   grid-area : phaseI;
   justify-self : center;
   width : 4em;
 }
-.RingCDialFreq {
+.RingCfreq {
   grid-area : freq;
 }
-.RingCDialFreqInput {
+.RingCfreqI {
   grid-area : freqI;
   justify-self : center;
   width : 4em;
