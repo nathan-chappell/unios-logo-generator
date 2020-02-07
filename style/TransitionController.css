@@ -4,8 +4,12 @@
   border : solid grey 5px;
   width : 300px;
   grid-area : TransitionController;
+  display : grid;
+  grid : "spline begin" 75px
+         "spline dur  " 75px;
 }
 
 .SplineController {
   border : solid grey 5px;
 }
+

@@ -3,6 +3,9 @@
 import {
   App
 } from "./controller/App.js";
+import {
+  Model
+} from "./model/NewModel.js";
 
 /*
  * NEXT:

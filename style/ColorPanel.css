@@ -6,3 +6,9 @@
   display : grid;
   grid-template-columns : repeat(4,1fr);
 }
+
+.ColorController {
+  height : 75px;
+  width : 75px;
+  stroke-width : .02;
+}

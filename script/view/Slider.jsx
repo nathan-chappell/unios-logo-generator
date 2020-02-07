@@ -11,7 +11,8 @@ import {
   roundDigits,
 } from "../util/util.js";
 import {
-  mouseTracker
+  mouseTracker,
+  getRelX,
 } from "../controller/MouseTracker.js";
 
 /*
@@ -25,45 +26,13 @@ const SliderAttributes = {
 SliderAttributes.leftPad = .5 - SliderAttributes.width/2;
 SliderAttributes.rightPad = .5 + SliderAttributes.width/2;
 
-/*
- * get callback to calculate new slider position
- */
-function getLength(ref, pos) {
-  //console.log('length callback');
-  if (ref.current == null) {
-    console.error('Slider move callback null ref');
-    return;
-  }
-  /*
-   * Calculate position of mouse relative to the actual slider bar
-   */
-  let bbox = ref.current.getBoundingClientRect();
-  let left = bbox.left + bbox.width*SliderAttributes.leftPad; let width = bbox.width * SliderAttributes.width;
-  return(clamp(0,(pos.x - left)/width,1));
-}
-
-
 function Slider(props) {
   const {width, height, swidth, leftPad, rightPad} = SliderAttributes;
   const { value, callback } = props;
-  //const frontLineRef = React.useRef(null);
-  //const backLineRef = React.useRef(null);
   const ref = React.useRef(null);
 
-  /*
   React.useEffect(() => {
-    mouseTracker(frontLineRef,callback);
-    mouseTracker(backLineRef,(pos) => callback(getLength(ref,pos)));
-  },[frontLineRef.current]);
-  */
-
-  /*
-  React.useEffect(() => {
-    mouseTracker(backLineRef,(pos) => callback(getLength(ref,pos)));
-  },[backLineRef.current]);
-  */
-  React.useEffect(() => {
-    mouseTracker(ref,(pos) => callback(getLength(ref,pos)));
+    mouseTracker(ref,(pos) => callback(getRelX(ref,pos)));
   },[ref.current]);
 
   function getBack() {

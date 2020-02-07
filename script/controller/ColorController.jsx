@@ -5,30 +5,26 @@ export {
 };
 
 import {
-  Colors,
-} from "../view/Colors.js";
-import {
-  StateReducerContext
-} from "../model/model.js";
+  CirclePath,
+  ViewBox,
+} from "../view/CirclePath.js";
 
 /*
  * need the control logic
  */
 function ColorController(props) {
-  const { myTheme } = props;
-  const dispatch = React.useContext(StateReducerContext);
-  const setColor = React.useCallback(() => {
-    dispatch({
-      type : 'colors',
-      value : {
-        inner : myTheme.inner,
-        outer : myTheme.outer,
-      }
-    });
-  },[dispatch,myTheme]);
+  const { myTheme, setColor } = props;
+  const circleProps = { r : .4, length : .5, };
+  const fwdInner = {fill : myTheme.inner};
+  const fwdOuter = {fill : myTheme.outer};
   return (
-    <div onClick={setColor}>
-      <Colors myTheme={myTheme} />
-    </div>
+    <svg viewBox={ViewBox} onClick={setColor} pointerEvents="visiblePainted"> 
+      <g fill="none" stroke="grey" strokeWidth=".02">
+        <CirclePath  {...circleProps} phase={90} z="true"
+          fwdProps={fwdInner} />
+        <CirclePath {...circleProps} phase={270} z="true"
+          fwdProps={fwdOuter} />
+      </g>
+    </svg>
   );
 }

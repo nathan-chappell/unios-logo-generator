@@ -20,10 +20,9 @@ import {
   Dial,
 } from "../view/Dial.js";
 import {
-  verifyStateAction,
-  StateReducerContext,
+  verifyAttribute,
   maxFreq,
-} from "../model/model.js";
+} from "../model/NewModel.js";
 
 function VerifiedInput(props) {
   const {verify, setValue, fwdProps} = props;
@@ -55,10 +54,10 @@ function VerifiedInput(props) {
  * the geometric component may require conversion
  */
 
-function getPhaseInputProps(_dispatch, value) {
+function getPhaseInputProps(setAttribute, value) {
   return {
-    setValue : (val) => _dispatch('phase',val),
-    verify : (val) => verifyStateAction('phase',val),
+    setValue : (val) => setAttribute('phase',val),
+    verify : (val) => verifyAttribute('phase',val),
     fwdProps : {
       value : roundDigits(value,1),
       min : 0,
@@ -70,10 +69,10 @@ function getPhaseInputProps(_dispatch, value) {
   };
 }
 
-function getFreqInputProps(_dispatch, value) {
+function getFreqInputProps(setAttribute, value) {
   return {
-    setValue : (val) => _dispatch('freq',val),
-    verify : (val) => verifyStateAction('freq',val),
+    setValue : (val) => setAttribute('freq',val),
+    verify : (val) => verifyAttribute('freq',val),
     fwdProps : {
       value : roundDigits(value,2),
       min : -maxFreq,
@@ -85,10 +84,10 @@ function getFreqInputProps(_dispatch, value) {
   };
 }
 
-function getLengthInputProps(_dispatch, value) {
+function getLengthInputProps(setAttribute, value) {
   return {
-    setValue : (val) => _dispatch('length',val),
-    verify : (val) => verifyStateAction('length',val),
+    setValue : (val) => setAttribute('length',val),
+    verify : (val) => verifyAttribute('length',val),
     fwdProps : {
       value : roundDigits(value,3),
       min : 0,
@@ -106,36 +105,30 @@ const converters = {
   'freq' : { model2comp : freq2deg, comp2model : deg2freq },
 }
 
-function getComponentProps(_dispatch, name, value) {
+function getComponentProps(setAttribute, name, value) {
   const { model2comp, comp2model} = converters[name];
   return {
     value : model2comp(value),
-    callback : (val) => _dispatch(name,comp2model(val)),
+    callback : (val) => setAttribute(name,comp2model(val)),
     fwdProps : { className : 'RingC' + name },
   };
 }
 
 function RingController(props) {
-  const { length, phase, freq, ringId} = props;
-  const dispatch = React.useContext(StateReducerContext);
+  const { length, phase, freq, ringId, setRingAttribute } = props;
 
-  const _dispatch = React.useCallback((attribute,value) => {
-    dispatch({
-      type : 'rings',
-      id : ringId,
-      attribute : attribute,
-      value : value,
-    });
-  },[dispatch,ringId]);
+  const setAttribute = React.useCallback((attribute,value) => {
+    setRingAttribute({ ringId : ringId, attribute : attribute, value : value});
+  }, [setRingAttribute,ringId]);
 
   return (
     <div className="RingC">
-      <Dial {...getComponentProps(_dispatch,'phase',phase)} />
-      <VerifiedInput {...getPhaseInputProps(_dispatch,phase)} />
-      <Dial {...getComponentProps(_dispatch,'freq',freq)} />
-      <VerifiedInput {...getFreqInputProps(_dispatch,freq)} />
-      <Slider {...getComponentProps(_dispatch,'length',length)} />
-      <VerifiedInput {...getLengthInputProps(_dispatch,length)} />
+      <Dial {...getComponentProps(setAttribute,'phase',phase)} />
+      <VerifiedInput {...getPhaseInputProps(setAttribute,phase)} />
+      <Dial {...getComponentProps(setAttribute,'freq',freq)} />
+      <VerifiedInput {...getFreqInputProps(setAttribute,freq)} />
+      <Slider {...getComponentProps(setAttribute,'length',length)} />
+      <VerifiedInput {...getLengthInputProps(setAttribute,length)} />
     </div>
   );
 }

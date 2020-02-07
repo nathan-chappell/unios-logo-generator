@@ -4,11 +4,23 @@ export {
   App
 };
 
+/*
 import { 
   stateReducer,
   getStateModel,
   StateReducerContext
 } from "../model/model.js";
+*/
+import {
+  Spline,
+  Transition,
+  Ring,
+  Colors,
+  State,
+  Model,
+  updateModel,
+  verifyAction,
+} from "../model/NewModel.js"
 import { 
   ControlPanel,
 } from "../controller/ControlPanel.js";
@@ -28,22 +40,38 @@ import {
   LogoSVG,
 } from "../view/logoSVG.js";
 
+function _dispatch(model,action) {
+  if (verifyAction(model,action)) {
+    console.error('invalid action:',action);
+  }
+  return updateModel(model,action);
+}
+
 function App(props) {
-  const [state, dispatch] = React.useReducer(stateReducer,getStateModel());
-  const [transitionDiagram, transitionDispatch] = 
-      React.useReducer(transitionReducer,new TransitionDiagram());
-  console.log(state);
+  const [model, dispatch] = React.useReducer(_dispatch, new Model());
+  const { states, transitions, current } = model;
+
+  function setRingAttribute(value) {
+    dispatch({ action : 'setRingAttribute', value : value});
+  }
+  const curRings = states[current].rings;
+
+  function setColors(theme) {
+    dispatch({ action : 'setColor', theme : theme });
+  }
+
+  function setTransition(transition) {
+    dispatch({ action : 'setTransition', transition : transition });
+  }
+  const curTransition = transitions[current];
+
+        //<LogoSVG model={model} />
   return (
     <div className="App">
-      <StateReducerContext.Provider value={dispatch}>
-        <ControlPanel rings={state.rings}/>
-        <LogoSVG rings={state.rings} colors={state.colors}/>
-        <ColorPanel />
-      </StateReducerContext.Provider>
-      <TransitionReducerContext.Provider value={transitionDispatch}>
-        <TransitionController 
-            transition={transitionDiagram.getCurTransition()}/>
-      </TransitionReducerContext.Provider>
+      <ControlPanel rings={curRings} setRingAttribute={setRingAttribute}/>
+      <ColorPanel setColors={setColors}/>
+      <TransitionController transition={curTransition} 
+          setTransition={setTransition}/>
     </div>
   );
 }
