@@ -13,18 +13,27 @@ export {
   updateModel,
 };
 
+import {
+  randId,
+} from "../util/util.js";
+
+const defaultSpline = {x1 : .25, y1 : .1, x2 : .25, y2 : 1};
+
 function Spline(x1,y1,x2,y2) {
   // default is 'ease'
-  this.x1 = x1 ? x1 : .25;
-  this.y1 = y1 ? y1 : .1;
-  this.x2 = x2 ? x2 : .25;
-  this.y2 = y2 ? y2 : 1;
+  if (arguments.length == 0) {
+    return {...defaultSpline};
+  }
+  return {x1 : x1, y1 : y1, x2 : x2, y2 : y2 };
 }
 
+const defaultTransition = { begin : 0, dur : 1, spline : Spline() };
+
 function Transition(begin,dur,spline) {
-	this.begin = begin ? begin : 0;
-	this.dur = dur ? dur : 1;
-	this.spline = spline ? spline : new Spline();
+  if (arguments.length == 0) {
+    return {...defaultTransition};
+  }
+  return { begin : begin, dur : dur, spline : {...spline}};
 }
 
 Colors.themes = {
@@ -35,32 +44,42 @@ Colors.themes = {
 };
 
 function Colors(theme) {
-  console.log('colors:',theme,);
+  //console.log('colors:',theme,);
   if (!(theme in Colors.themes)) {
     console.error('invalid theme:', theme);
+    console.trace();
     theme = Object.keys(Colors.themes)[0];
   }
   return Colors.themes[theme];
 }
 
 const maxFreq = 2;
+const defaultRing = { length : 1, phase : 0, freq : 0};
 
 function Ring(length,phase,freq) {
-	this.length = length ? length : 1;
-	this.phase = phase ? phase : 0;
-	this.freq = freq ? freq : 0;
+  if (arguments.length == 0) {
+    return {...defaultRing};
+  }
+  return { length : length, phase : phase, freq : freq };
 }
-
-const stateCounter = (() => { let i = 0; return ()=>{ i++; return i; }})();
 
 function defaultRingSet() {
   const rings = {};
-  for (let i = 1; i <= 4; ++i) rings['ring' + i] = new Ring();
+  for (let i = 1; i <= 4; ++i) rings['ring' + i] = Ring();
   return rings;
 }
 
+const defaultState = { 
+  name : name : 'state' + randId(),
+  rings : defaultRingSet(),
+  colors : {...Colors.themes[0]},
+};
+
 function State(name,rings,colors) {
-	this.name = name ? name : 'state' + stateCounter();
+  if (arguments.length == 0) {
+    return {...defaultState};
+  }
+	this.name = name ? ;
 	this.rings = rings ? rings : defaultRingSet();
 	this.colors = colors ? colors : 0;
 }
@@ -71,15 +90,23 @@ function Model() {
   this.current = 0;
 }
 
-function updateModel(model,action) {
+function updateModel(model,command) {
+  //console.log(model,command);
   const curState = model.states[model.current];
-  switch(action.type) {
+  const {action, arg} = command;
+  switch(action) {
     case 'setRingAttribute': {
-      const { ringId, attribute, value } = action.value;
+      const { ringId, attribute, value } = arg;
       curState.rings[ringId][attribute] = value;
-    }
-    case 'setColor': curState.colors = Colors(action.theme);
-    case 'setTransition': model.transitions[model.current] = action.transition;
+      //console.log('curState', curState);
+    } break;
+    case 'setColor': {
+      curState.colors = Colors(arg); 
+    } break;
+    case 'setTransition': {
+      model.transitions[model.current] = arg; 
+    } break;
+    default : console.error('unknown action',action);
   }
   return {...model};
 }

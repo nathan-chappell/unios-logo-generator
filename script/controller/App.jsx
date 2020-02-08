@@ -41,7 +41,7 @@ import {
 } from "../view/logoSVG.js";
 
 function _dispatch(model,action) {
-  if (verifyAction(model,action)) {
+  if (!verifyAction(model,action)) {
     console.error('invalid action:',action);
   }
   return updateModel(model,action);
@@ -51,17 +51,17 @@ function App(props) {
   const [model, dispatch] = React.useReducer(_dispatch, new Model());
   const { states, transitions, current } = model;
 
-  function setRingAttribute(value) {
-    dispatch({ action : 'setRingAttribute', value : value});
+  function setRingAttribute(arg) {
+    dispatch({ action : 'setRingAttribute', arg : arg});
   }
   const curRings = states[current].rings;
 
   function setColors(theme) {
-    dispatch({ action : 'setColor', theme : theme });
+    dispatch({ action : 'setColor', arg : theme });
   }
 
   function setTransition(transition) {
-    dispatch({ action : 'setTransition', transition : transition });
+    dispatch({ action : 'setTransition', arg : transition });
   }
   const curTransition = transitions[current];
 

@@ -15,6 +15,11 @@ export {
   _ID,
 };
 
+const randId = (() => {
+  let base = Math.floor(Math.random()*10**6);
+  return () => { return ++base; };
+})();
+
 function _ID(x) { return x; }
 
 function addClassName(props,className) {

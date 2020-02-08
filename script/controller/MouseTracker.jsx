@@ -11,27 +11,23 @@ import {
 } from "../util/util.js";
 
 function getRelY(ref, pos) {
-  //console.log('length callback');
   if (ref.current == null) {
     console.error('getRelY null ref');
     return;
   }
   let bbox = ref.current.getBoundingClientRect();
-  //let left = bbox.left + bbox.width*SliderAttributes.leftPad; 
-  //let width = bbox.width * SliderAttributes.width;
-  return(clamp(0,(pos.y - bbox.top)/bbox.height,1));
+  //console.log('relY',(clamp(0,(pos.y - bbox.top)/bbox.height,1)));
+  return (clamp(0,(pos.y - bbox.top)/bbox.height,1));
 }
 
 function getRelX(ref, pos) {
-  //console.log('length callback');
   if (ref.current == null) {
     console.error('getRelX null ref');
     return;
   }
   let bbox = ref.current.getBoundingClientRect();
-  //let left = bbox.left + bbox.width*SliderAttributes.leftPad; 
-  //let width = bbox.width * SliderAttributes.width;
-  return(clamp(0,(pos.x - bbox.left)/bbox.width,1));
+  //console.log('relX',(clamp(0,(pos.x - bbox.left)/bbox.width,1)));
+  return (clamp(0,(pos.x - bbox.left)/bbox.width,1));
 }
 
 /*
@@ -83,6 +79,15 @@ function mouseTracker(ref,callback) {
     //console.log('start tracking');
     for (let e in trackEvents) {
       window.addEventListener(e,trackEvents[e]);
+    }
+  }
+  return () => {
+    for (let e in triggerEvents) {
+      if (!ref.current) {
+        console.warn('MT: no current');
+        break;
+      }
+      ref.current.removeEventListener(e,triggerEvents[e]);
     }
   }
 }
