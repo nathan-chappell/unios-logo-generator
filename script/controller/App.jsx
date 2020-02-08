@@ -12,49 +12,54 @@ import {
 } from "../model/model.js";
 */
 import {
-  Spline,
-  Transition,
-  Ring,
   Colors,
-  State,
   Model,
   updateModel,
-  verifyAction,
 } from "../model/NewModel.js"
+import {
+  RingController,
+} from "../controller/RingController.js";
 import { 
-  ControlPanel,
-} from "../controller/ControlPanel.js";
-import { 
-  ColorPanel,
-} from "../controller/ColorPanel.js";
-import { 
-  transitionReducer,
-  getTransitionModel,
-  TransitionDiagram,
-  TransitionReducerContext,
-} from "../model/transitions.js";
+  ColorController,
+} from "../controller/ColorController.js";
 import {
   TransitionController,
 } from "../controller/TransitionController.js";
 import {
-  LogoSVG,
-} from "../view/logoSVG.js";
+  Logo,
+} from "../view/Logo.js";
 
-function _dispatch(model,action) {
-  if (!verifyAction(model,action)) {
-    console.error('invalid action:',action);
-  }
-  return updateModel(model,action);
+function RingControllers(props) {
+  const { rings, setRingAttribute } = props;
+  const ringControllers = Object.keys(rings).map(
+    (ringId) => {
+      let { length, phase, freq } = rings[ringId];
+      return (
+        <RingController key={ringId} ringId={ringId}
+          length={length} phase={phase} freq={freq}
+          setRingAttribute={setRingAttribute} />
+      );
+    });
+  return <>{ringControllers}</>;
+}
+
+function ColorControllers(props) {
+  const { setColors } = props;
+  const colorControllers = Object.keys(Colors.themes).map((theme) => 
+    <ColorController key={theme} theme={theme} setColors={setColors} />
+  );
+  return <>{colorControllers}</>
 }
 
 function App(props) {
-  const [model, dispatch] = React.useReducer(_dispatch, new Model());
+  const [model, dispatch] = React.useReducer(updateModel, Model());
   const { states, transitions, current } = model;
+  const rings = states[current].rings;
+  const curTransition = transitions[current];
 
   function setRingAttribute(arg) {
     dispatch({ action : 'setRingAttribute', arg : arg});
   }
-  const curRings = states[current].rings;
 
   function setColors(theme) {
     dispatch({ action : 'setColor', arg : theme });
@@ -63,13 +68,16 @@ function App(props) {
   function setTransition(transition) {
     dispatch({ action : 'setTransition', arg : transition });
   }
-  const curTransition = transitions[current];
 
-        //<LogoSVG model={model} />
   return (
     <div className="App">
-      <ControlPanel rings={curRings} setRingAttribute={setRingAttribute}/>
-      <ColorPanel setColors={setColors}/>
+      <div className="ControlPanel">
+        <RingControllers rings={rings} setRingAttribute={setRingAttribute} />
+      </div>
+      <div className="ColorPanel">
+        <ColorControllers setColors={setColors} />
+      </div>
+      <Logo model={model} />
       <TransitionController transition={curTransition} 
           setTransition={setTransition}/>
     </div>

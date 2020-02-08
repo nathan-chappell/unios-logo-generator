@@ -5,13 +5,14 @@ nnoremap \t :!firefox index.html
 nnoremap \mm :wa<CR>:!make<CR>
 nnoremap \ff :set filetype==&filetype == 'html' ? 'javascript' : 'html'
 nnoremap \gf :find script/<c-r>=substitute(expand('<cfile>'),'\.*','','')<cr>x<cr>
+nnoremap \gs :sp script/<c-r>=substitute(expand('<cfile>'),'\.*','','')<cr>x<cr>
 nnoremap \gg :grep! script/*.jsx script/*/*.jsx -e <c-r>=expand('<cword>')<cr><cr>
 nnoremap \mt :!./gentags.sh<cr>
 nnoremap \vv :so .vimrc<cr>
 nnoremap \md :call MakeDefaults()<cr>
 nnoremap \ms :call MakeSetters()<cr>
 
-set nu hls si et ts=2 sts=2 sw=2 fo=croqtjn nowrap tw=0
+set nu hls si et ts=2 sts=2 sw=2 fo=croqtjn nowrap tw=0 autowrite
 set path+=script suffixesadd=x
 
 if !exists('localLoaded')

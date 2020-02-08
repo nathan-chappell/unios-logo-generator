@@ -2,28 +2,29 @@
 
 export {
   ColorController,
-};
+}
 
+import {
+  Colors,
+} from "../model/NewModel.js";
 import {
   CirclePath,
   ViewBox,
 } from "../view/CirclePath.js";
 
-/*
- * need the control logic
- */
 function ColorController(props) {
-  const { myTheme, setColor } = props;
+  const { theme, setColors } = props;
+  const { inner, outer } = Colors(theme);
   const circleProps = { r : .4, length : .5, };
-  const fwdInner = {fill : myTheme.inner};
-  const fwdOuter = {fill : myTheme.outer};
+  const setColor = React.useCallback(() => setColors(theme),[theme]);
   return (
-    <svg viewBox={ViewBox} onClick={setColor} pointerEvents="visiblePainted"> 
-      <g fill="none" stroke="grey" strokeWidth=".02">
+    <svg viewBox={ViewBox} onClick={setColor} 
+         pointerEvents="visiblePainted" className="ColorController"> 
+      <g fill="none" stroke="grey">
         <CirclePath  {...circleProps} phase={90} z="true"
-          fwdProps={fwdInner} />
+          fwdProps={{fill : inner}} />
         <CirclePath {...circleProps} phase={270} z="true"
-          fwdProps={fwdOuter} />
+          fwdProps={{fill : outer}} />
       </g>
     </svg>
   );

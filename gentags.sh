@@ -1,6 +1,9 @@
 #!/bin/bash
 # generate the tags for the tree
 
+# make sure the files are commented with the right names...
+find . -name "*.jsx" -exec ex -c '1s$.*$\="// " . expand("%:t")$' -c 'wq' \{\} \;
+
 # force language for jsx files
 ctags --language-force=javascript --sort=no script/*.jsx script/*/*.jsx
 

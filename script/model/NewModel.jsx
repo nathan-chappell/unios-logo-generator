@@ -27,7 +27,7 @@ function Spline(x1,y1,x2,y2) {
   return {x1 : x1, y1 : y1, x2 : x2, y2 : y2 };
 }
 
-const defaultTransition = { begin : 0, dur : 1, spline : Spline() };
+const defaultTransition = { dur : 1, spline : Spline() };
 
 function Transition(begin,dur,spline) {
   if (arguments.length == 0) {
@@ -70,30 +70,40 @@ function defaultRingSet() {
 }
 
 const defaultState = { 
-  name : name : 'state' + randId(),
+   name : 'state' + randId(),
   rings : defaultRingSet(),
   colors : {...Colors.themes[0]},
+  zoom : 1,
 };
 
-function State(name,rings,colors) {
+function State(name,rings,colors,zoom) {
   if (arguments.length == 0) {
     return {...defaultState};
   }
-	this.name = name ? ;
-	this.rings = rings ? rings : defaultRingSet();
-	this.colors = colors ? colors : 0;
+  return { 
+    name : name,
+    rings : rings,
+    colors : colors,
+    zoom : zoom 
+  };
 }
 
 function Model() {
-  this.states = [new State()];
-  this.transitions = [new Transition()];
-  this.current = 0;
+  return { 
+    states : [State()], 
+    transitions : [Transition()], 
+    current : 0,
+    id : 'Model-' + randId(),
+  };
 }
 
 function updateModel(model,command) {
   //console.log(model,command);
   const curState = model.states[model.current];
   const {action, arg} = command;
+  if (!verifyAction(model,action)) {
+    console.error('invalid action:',action);
+  }
   switch(action) {
     case 'setRingAttribute': {
       const { ringId, attribute, value } = arg;

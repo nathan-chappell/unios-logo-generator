@@ -17,53 +17,6 @@ import {
   getOuterRotationID,
 } from "../util/util.js";
 
-/*
- * need to implement the new LogoSVG element built from the new model.
- *    each state is an element
- *    final transition wraps around the end (maybe configurable)
- *    transitions are created with reference to elements the transfer
- *    running tally of times kept for creation of transitions
- */
-
-/*
- * create well-labeled shell
- * create transitions from each state
- *
- * animatables:
- *   zoom         - animateTransform - applies to all
- *   inner stroke - g - applies to all inner
- *   outer stroke - g - applies to all outer
- *   phase        - CirclePath - per ring
- *   length       - CirclePath - per ring
- *   freq         - FreqRotation - per ring
- *
- * for each animatable:
- *   attributeName 
- *   id - get name attributeName, curState
- *   href - id of prev
- *   from - value of prev
- *   to - value from curState
- *
- * common to all:
- *   calcMode - "spline"
- *   dur - input
- *   keySplines - input
- */
-
-const animZoom = {
-  tag : 'animateTransform',
-  transformInfo : {
-    attributeName : 'transform'
-    type : 'scale',
-  },
-  getId : (state,i) => 'zoom' + i + state.name + randId(),
-  getFrom : (state) => state.
-};
-
-const animatables = {
-  'zoom' : animZoom,
-};
-
 
 function LogoSVG(props) {
   const { rings } = props;

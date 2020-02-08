@@ -13,12 +13,19 @@ export {
   getOuterRotationID,
   addClassName,
   _ID,
+  randId,
+  mkName,
+  DEBUG
 };
+
+function DEBUG() { console.warn('DEBUG:',...arguments); console.trace(); }
 
 const randId = (() => {
   let base = Math.floor(Math.random()*10**6);
   return () => { return ++base; };
 })();
+
+function mkName() { return [...arguments].join('-'); }
 
 function _ID(x) { return x; }
 
