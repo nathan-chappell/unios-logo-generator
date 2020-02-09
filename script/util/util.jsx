@@ -15,10 +15,20 @@ export {
   _ID,
   randId,
   mkName,
-  DEBUG
+  DEBUG,
+  DEBUG_FN,
 };
 
 function DEBUG() { console.warn('DEBUG:',...arguments); console.trace(); }
+
+// Decorator
+function DEBUG_FN(f,msg) {
+  return function() {
+    const retVal = f(...arguments);
+    DEBUG(msg,'FN',f,'ARGS',arguments,'RET',retVal)
+    return retVal;
+  }
+}
 
 const randId = (() => {
   let base = Math.floor(Math.random()*10**6);

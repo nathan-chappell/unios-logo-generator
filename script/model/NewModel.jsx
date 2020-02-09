@@ -29,11 +29,11 @@ function Spline(x1,y1,x2,y2) {
 
 const defaultTransition = { dur : 1, spline : Spline() };
 
-function Transition(begin,dur,spline) {
+function Transition(dur,spline) {
   if (arguments.length == 0) {
     return {...defaultTransition};
   }
-  return { begin : begin, dur : dur, spline : {...spline}};
+  return { dur : dur, spline : {...spline}};
 }
 
 Colors.themes = {
@@ -70,9 +70,9 @@ function defaultRingSet() {
 }
 
 const defaultState = { 
-   name : 'state' + randId(),
+  name : 'state' + randId(),
   rings : defaultRingSet(),
-  colors : {...Colors.themes[0]},
+  colors : {...Colors.themes[Object.keys(Colors.themes)[0]]},
   zoom : 1,
 };
 
@@ -90,10 +90,10 @@ function State(name,rings,colors,zoom) {
 
 function Model() {
   return { 
+    id : 'Model-' + randId(),
     states : [State()], 
     transitions : [Transition()], 
     current : 0,
-    id : 'Model-' + randId(),
   };
 }
 

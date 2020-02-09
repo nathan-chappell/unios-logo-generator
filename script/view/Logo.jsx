@@ -17,6 +17,7 @@ import {
   getOuterRotationID,
   mkName,
   DEBUG,
+  DEBUG_FN,
   randId,
 } from "../util/util.js";
 
@@ -64,6 +65,10 @@ function getState(model,i) {
   return getListItem(model.states,i);
 };
 
+function getTransition(model,i) {
+  return getListItem(model.transitions,i);
+};
+
 function animAttributes(name,type) {
   let attributes = {
     attributeName : name,
@@ -80,6 +85,14 @@ function animAttributes(name,type) {
   return attributes;
 }
 
+function defaultRender(attributes) {
+  if (attrs.Class.tag == 'animate') {
+    return <animate {...attributes} />;
+  } else {
+    return <animateTransform {...attributes} />;
+  }
+}
+
 /*
  * animatables:
  *   zoom         - animateTransform - applies to all
@@ -90,25 +103,49 @@ function animAttributes(name,type) {
  *   freq         - FreqRotation - per ring
  */
 
-const ClassDict = {};
+// this global could mean trouble...
+const GlobalClassDict = {};
 
-function MkClass(name,tag,get,attributeName,type) {
-  if (name in ClassDict) return ClassDict[name];
+/*
+ * Class constructor:
+ *  @name    : Introspect
+ *  @tag     : Properties
+ *  @get     : PureVirtual
+ *  @render  : Virtual
+ *  getHref  <- @name
+ *  getAttrs <- @name
+ *  mkAttrs  <- @attributeName, @type
+ */
+function MkClass(ClassProps) {
+  const { name, tag, get, attributeName, type, render } = ClassProps;
+  if (name in GlobalClassDict) return GlobalClassDict[name];
   let Class = {};
   Object.assign(Class, {
       name : name,
       tag : tag,
       get : get,
-      getHref : (model) => mkName(model.name,name),
+      getHref : (model) => mkName(model.id,name),
       getAttrs : (animation) => animation[name],
       mkAttrs : () => {
         const attrs = animAttributes(attributeName,type);
         // makes Class a non-enumerable property of attrs
         return Object.defineProperty(attrs,'Class',{value : Class});
-      }
+      },
+      render : (typeof render === 'function' ? render : defaultRender),
   });
-  ClassDict[name] = Class;
+  GlobalClassDict[name] = Class;
   return Class;
+}
+
+function accelerationSpline(spline,from,to) {
+}
+
+function freqRender(attributes) {
+  /*
+   * SET BY := FROM
+   * ANIMATE PHASE := keyTimes values
+   *
+   */
 }
 
 // handled completely differently... 
@@ -116,61 +153,92 @@ function MkClass(name,tag,get,attributeName,type) {
 //    phase transformed to simulate spline
 //    transform 'set' at end of duration to effect change
 //    requires two separate animations for two different attributes...
-function FreqClass(ringId) {
-  return MkClass(
-    mkName('Freq',ringId),
-    'SPECIAL',
-    (state) => state.rings[ringId].freq,
-    'SPECIAL',
-  );
+function MkFreqClass(ringId) {
+  return MkClass({
+    name : mkName('Freq',ringId),
+    tag : 'SPECIAL',
+    get : (state) => state.rings[ringId].freq,
+    attributeName : 'SPECIAL',
+    render : freqRender,
+  });
 }
 
-function LengthClass(ringId) {
-  return MkClass(
-    mkName('Length',ringId),
-    'animate',
-    (state) => state.rings[ringId].length,
-    'd',
-  );
+function MkLengthClass(ringId) {
+  return MkClass({
+    name : mkName('Length',ringId),
+    tag : 'animate',
+    get : (state) => state.rings[ringId].length,
+    attributeName : 'd',
+  });
 }
 
-function PhaseClass(ringId) {
-  return MkClass(
-    mkName('Phase',ringId),
-    'animateTransform',
-    (state) => state.rings[ringId].phase,
-    'transform',
-    'rotate',
-  );
+function MkPhaseClass(ringId) {
+  return MkClass({
+    name : mkName('Phase',ringId),
+    tag : 'animateTransform',
+    get : (state) => state.rings[ringId].phase,
+    attributeName : 'transform',
+    type : 'rotate',
+  });
 }
 
-const OuterStroke = MkClass(
-  'OuterStroke',
-  'transform',
-  (state) => state.colors.outer,
-  'stroke',
-);
+function MkClassDict(model) {
+  const ClassDict = {};
 
-const InnerStroke = MkClass(
-  'InnerStroke',
-  'transform',
-  (state) => state.colors.inner,
-  'stroke',
-);
+  const OuterStroke = MkClass({
+    name : 'OuterStroke',
+    tag : 'transform',
+    get : (state) => state.colors.outer,
+    attributeName : 'stroke',
+  });
 
-const Zoom = MkClass(
-  'Zoom',
-  'animateTransform',
-  (state) => state.zoom,
-  'transform',
-  'scale',
-);
+  const InnerStroke = MkClass({
+    name : 'InnerStroke',
+    tag : 'transform',
+    get : (state) => state.colors.inner,
+    attributeName : 'stroke',
+  });
+
+  const Zoom = MkClass({
+    name : 'Zoom',
+    tag : 'animateTransform',
+    get : (state) => state.zoom,
+    attributeName : 'transform',
+    type: 'scale',
+  });
+  
+  ClassDict[InnerStroke.name] = InnerStroke;
+  ClassDict[OuterStroke.name] = OuterStroke;
+  ClassDict[Zoom.name] = Zoom;
+
+  for (const state of model.states) {
+    for (const ringId in state.rings) {
+      let PhaseClass = MkPhaseClass(ringId);
+      let LengthClass = MkLengthClass(ringId);
+      let FreqClass = MkFreqClass(ringId);
+      ClassDict[PhaseClass.name] = PhaseClass;
+      ClassDict[LengthClass.name] = LengthClass;
+      ClassDict[FreqClass.name] = FreqClass;
+    }
+  }
+
+  return ClassDict;
+}
+
+function getKeySplines(spline) {
+  const { x1, y1, x2, y2, } = spline;
+  return `x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"`;
+}
 
 function firstPass(attributes,model,i) {
   const Class = attributes.Class;
-  attributes.id = mkName(Class.name,i,getState(model,i).name,randId());
-  attributes.to = Class.get(getState(model,i));
-  attributes.href = Class.getHref(model);
+  const state = getState(model,i);
+  const transition = getTransition(model,i);
+  attributes.id = mkName(Class.name,i,state.name,randId());
+  attributes.to = Class.get(state);
+  attributes.href = '#' + Class.getHref(model);
+  attributes.dur = transition.dur;
+  attributes.keySplines = getKeySplines(transition.spline);
 }
 
 function secondPass(attributes,animationList,i) {
@@ -180,37 +248,13 @@ function secondPass(attributes,animationList,i) {
   attributes.begin = prev.id + ".end";
 }
 
-const nRings = 4;
-
-function RingAnimationItem(ringId) {
-  return {
-    [mkName('Phase',ringId)] : PhaseClass(ringId).mkAttrs(),
-    [mkName('Length',ringId)] : LengthClass(ringId).mkAttrs(),
-    [mkName('Freq',ringId)] : FreqClass(ringId).mkAttrs(),
-  };
-}
-
-function RingsAnimationItem(ringIds) {
-  let item = {};
-  for (const ringId of ringIds) {
-    Object.assign(item,RingAnimationItem(ringId));
+function AnimationItem(ClassDict) {
+  const item = {};
+  for (const ClassId in ClassDict) {
+    const Class = ClassDict[ClassId];
+    item[Class.name] = Class.mkAttrs();
   }
   return item;
-}
-
-/*
- * I think that I should just gen-up the ClassDict and use that to 
- * define the AnimationItem...
- *
- * Another ABS like AnimationItem(model) { generateClasses... }
- */
-function AnimationItem(ringIds) {
-  let item = {
-    Zoom : Zoom.mkAttrs(),
-    InnerStroke : InnerStroke.mkAttrs(),
-    OuterStroke : OuterStroke.mkAttrs(),
-  };
-  return Object.assign(item,RingsAnimationItem(ringIds));
 }
 
 function Logo(props) {
@@ -218,14 +262,15 @@ function Logo(props) {
   const { states, transitions, current, id } = model;
   const length = model.states.length;
   const animationList = new Array(length);
+  const ClassDict = MkClassDict(model);
+  DEBUG(ClassDict);
 
   for (let i = 0; i < length; ++i) {
-    animationList[i] = AnimationItem(Object.keys(states[i].rings));
+    animationList[i] = AnimationItem(ClassDict);
     for (const key in animationList[i]) {
       firstPass(animationList[i][key],model,i);
     }
   }
-  DEBUG(ClassDict);
 
   for (let i = 0; i < length; ++i) {
     for (const key in animationList[i]) {
@@ -233,6 +278,7 @@ function Logo(props) {
     }
   }
 
-  console.log(animationList);
+  DEBUG(animationList);
+
   return <div>Logo</div>
 }

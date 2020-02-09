@@ -11,6 +11,15 @@ nnoremap \mt :!./gentags.sh<cr>
 nnoremap \vv :so .vimrc<cr>
 nnoremap \md :call MakeDefaults()<cr>
 nnoremap \ms :call MakeSetters()<cr>
+nnoremap \mc :let tabCol = col('.')<cr>yl:let tabChar = @"<cr>
+nnoremap \<space> :set opfunc=ISpace<cr>g@
+
+function! ISpace(mode)
+  "normal f<c-r>=tabChar<cr><c-r>=tabCol - col('.')<cr>i 
+  exec line("'[") . ',' . line("']") . 's/\s*' . g:tabChar
+              \ . '/\=repeat(" ",g:tabCol-col(".")) . "' . g:tabChar . '"/'
+endfunction
+
 
 set nu hls si et ts=2 sts=2 sw=2 fo=croqtjn nowrap tw=0 autowrite
 set path+=script suffixesadd=x
