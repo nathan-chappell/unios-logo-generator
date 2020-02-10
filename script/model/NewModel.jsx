@@ -16,6 +16,9 @@ export {
 import {
   randId,
 } from "../util/util.js";
+import {
+  themes,
+} from "../view/logoProps.js";
 
 const defaultSpline = {x1 : .25, y1 : .1, x2 : .25, y2 : 1};
 
@@ -36,12 +39,8 @@ function Transition(dur,spline) {
   return { dur : dur, spline : {...spline}};
 }
 
-Colors.themes = {
-  theme1 : { inner : 'black', outer : 'grey', },
-  theme2 : { inner : 'magenta', outer : 'cyan', },
-  theme3 : { inner : 'brown', outer : 'orange', },
-  theme4 : { inner : 'red', outer : 'forestgreen', },
-};
+// imported
+Colors.themes = themes;
 
 function Colors(theme) {
   //console.log('colors:',theme,);
@@ -63,9 +62,13 @@ function Ring(length,phase,freq) {
   return { length : length, phase : phase, freq : freq };
 }
 
+function Ring_level(level) {
+  return {...Ring(), level : level };
+}
+
 function defaultRingSet() {
   const rings = {};
-  for (let i = 1; i <= 4; ++i) rings['ring' + i] = Ring();
+  for (let i = 0; i < 4; ++i) rings['ring' + i] = Ring_level(i);
   return rings;
 }
 

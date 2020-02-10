@@ -19,6 +19,7 @@ import {
   DEBUG,
   DEBUG_FN,
   randId,
+  getCircle_d,
 } from "../util/util.js";
 
 /*
@@ -73,6 +74,7 @@ function animAttributes(name,type) {
   let attributes = {
     attributeName : name,
     calcMode : "spline",
+    fill : "freeze",
     id : null,
     to : null,
     href : null,
@@ -81,15 +83,27 @@ function animAttributes(name,type) {
     dur : null,
     keySplines : null,
   };
-  if (type) attributes.type = type;
+  // implicitly animateTransform
+  if (type) {
+    attributes.type = type;
+    attributes.additive = "sum";
+  }
   return attributes;
+}
+
+function beginFrom0(attributes) {
+  if (attributes.current) {
+    attributes.begin += ";0";
+  }
 }
 
 function defaultRender(attributes) {
   if (attrs.Class.tag == 'animate') {
     return <animate {...attributes} />;
-  } else {
+  } else if (attrs.Class.tag == 'animate') {
     return <animateTransform {...attributes} />;
+  } else {
+    DEBUG('unreachable');
   }
 }
 
@@ -132,20 +146,71 @@ function MkClass(ClassProps) {
         return Object.defineProperty(attrs,'Class',{value : Class});
       },
       render : (typeof render === 'function' ? render : defaultRender),
+    // here goes some svg_make_shell_of_layout function...
   });
   GlobalClassDict[name] = Class;
   return Class;
 }
 
-function accelerationSpline(spline,from,to) {
+// Handle the frequency change...
+
+const N = 256;
+
+function getTimeArrays() {
+  const T3 = new Array(N + 1);
+  const T2T_ = new Array(N + 1);
+  const TT_2 = new Array(N + 1);
+  const T_3 = new Array(N + 1);
+  for (let i = 0; i <= N; ++i) {
+    T3[i] = (i/N)**3;
+    T2T_[i] = (i/N)**2*(1-i/N);
+    TT_2[i] = (i/N)*(1-i/N)**2;
+    T_3[i] = (1-i/N)**3;
+  }
+  return [T3,T2T_,TT_2,T_3];
+}
+
+const [T3,T2T_,TT_2,T_3] = getTimeArrays();
+
+function integrate(spline,from,to) {
+  const { x1, y1, x2, y2 } = spline;
+  const keyTimes = new Array(N +1);
+  const keyValues = new Array(N +1);
+  for (let i = 0; i <= N; ++i) {
+    keyTimes[i] = 3*TT_2[i]*x1 + 3*T2T_[i]*x2 + T3[i];
+    keyValues[i] = 3*TT_2[i]*x1 + 3*T2T_[i]*x2 + T3[i];
+    if (i > 0) keyValues[i] += keyValues[i-1];
+  }
+  return [keyTimes, keyValues.map((v) => v*(to-from))];
+}
+
+function freqFixUpAttributes(attributes) {
+  const { from, to, keySplines } = attributes;
+  const freqTransAttrs = {...attributes};
+  const freqRotAttrs = {...attributes};
+  const [x1,y1,x2,y2] = keySplines2Spline(keySplines);
+  const [keyTimes, keyValues] = integrate(spline,from,to);
+
+  delete freqTransAttrs.keySplines;
+  freqTransAttrs.keyTimes = keyTimes;
+  freqTransAttrs.keyValues = keyValues;
+  freqRotAttrs.repeatCount = "indefinite";
+
+  return [freqTransAttrs, freqRotAttrs];
 }
 
 function freqRender(attributes) {
-  /*
-   * SET BY := FROM
-   * ANIMATE PHASE := keyTimes values
-   *
-   */
+  [ freqTransAttrs, freqRotAttrs ] = freqFixUpAttributes(attributes);
+  return (
+    <>
+      <animateTransform ...freqTransAttrs />
+      <animateTransform ...freqRotAttrs />
+    </>
+  );
+}
+
+function outerRingHrefGetter(ringId) {
+  return (model) => mkName(model,ringId,'outer');
 }
 
 // handled completely differently... 
@@ -154,32 +219,38 @@ function freqRender(attributes) {
 //    transform 'set' at end of duration to effect change
 //    requires two separate animations for two different attributes...
 function MkFreqClass(ringId) {
-  return MkClass({
+  const Class = MkClass({
     name : mkName('Freq',ringId),
     tag : 'SPECIAL',
     get : (state) => state.rings[ringId].freq,
     attributeName : 'SPECIAL',
     render : freqRender,
   });
+  Class.getHref = outerRingHrefGetter(ringId);
+  return Class;
 }
 
 function MkLengthClass(ringId) {
-  return MkClass({
+  const Class = MkClass({
     name : mkName('Length',ringId),
     tag : 'animate',
     get : (state) => state.rings[ringId].length,
     attributeName : 'd',
   });
+  Class.getHref = outerRingHrefGetter(ringId);
+  return Class;
 }
 
 function MkPhaseClass(ringId) {
-  return MkClass({
+  const Class = MkClass({
     name : mkName('Phase',ringId),
     tag : 'animateTransform',
     get : (state) => state.rings[ringId].phase,
     attributeName : 'transform',
     type : 'rotate',
   });
+  Class.getHref = outerRingHrefGetter(ringId);
+  return Class;
 }
 
 function MkClassDict(model) {
@@ -225,9 +296,13 @@ function MkClassDict(model) {
   return ClassDict;
 }
 
-function getKeySplines(spline) {
+function keySplines2Spline(keySplines) {
+  return keySplines.split(',').map(v => Number(v));
+}
+
+function spline2keySplines(spline) {
   const { x1, y1, x2, y2, } = spline;
-  return `x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"`;
+  return `${x1},${y1},${x2},${y2}`;
 }
 
 function firstPass(attributes,model,i) {
@@ -238,7 +313,7 @@ function firstPass(attributes,model,i) {
   attributes.to = Class.get(state);
   attributes.href = '#' + Class.getHref(model);
   attributes.dur = transition.dur;
-  attributes.keySplines = getKeySplines(transition.spline);
+  attributes.keySplines = spline2keySplines(transition.spline);
 }
 
 function secondPass(attributes,animationList,i) {
@@ -246,6 +321,7 @@ function secondPass(attributes,animationList,i) {
   const prev = Class.getAttrs(getListItem(animationList,i-1));
   attributes.from = prev.to;
   attributes.begin = prev.id + ".end";
+  beginFrom0(attributes);
 }
 
 function AnimationItem(ClassDict) {
@@ -255,6 +331,16 @@ function AnimationItem(ClassDict) {
     item[Class.name] = Class.mkAttrs();
   }
   return item;
+}
+
+function SVGRing(ring,outerRingId) {
+  const { length, phase, freq, level } = ring;
+  const r = logoProps.radii[i];
+  const inner_d = getCircle_d(1,r);
+  const outer_d = getCircle_d(1,r);
+  return (
+    //<path d={inner_d} 
+  );
 }
 
 function Logo(props) {
@@ -267,6 +353,9 @@ function Logo(props) {
 
   for (let i = 0; i < length; ++i) {
     animationList[i] = AnimationItem(ClassDict);
+    if (i == current) {
+      Object.defineProperty(animationList[i],'current',true);
+    }
     for (const key in animationList[i]) {
       firstPass(animationList[i][key],model,i);
     }
@@ -279,6 +368,28 @@ function Logo(props) {
   }
 
   DEBUG(animationList);
+  const animations = [];
+  for (let animation of animationList) {
+    for (let item in animation) {
+      animations.push(animation[item].render());
+    }
+  }
 
-  return <div>Logo</div>
+  const svg_rings = {};
+  for (let state of model.states) {
+    for (let ringId in state.rings) {
+      if (!(ringId in rings)) {
+        rings[ringId] = SVGRing(state.rings[ringId],ringId);
+      }
+    }
+  }
+  /*
+   * and insert the whole clusterjam into a shell of the thing...
+   * shell is built from the model...
+   */
+
+  return (
+    <svg viewBox={ViewBox} className="Logo" id={model.id}>
+    </svg>
+  );
 }

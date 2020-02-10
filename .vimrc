@@ -9,8 +9,6 @@ nnoremap \gs :sp script/<c-r>=substitute(expand('<cfile>'),'\.*','','')<cr>x<cr>
 nnoremap \gg :grep! script/*.jsx script/*/*.jsx -e <c-r>=expand('<cword>')<cr><cr>
 nnoremap \mt :!./gentags.sh<cr>
 nnoremap \vv :so .vimrc<cr>
-nnoremap \md :call MakeDefaults()<cr>
-nnoremap \ms :call MakeSetters()<cr>
 nnoremap \mc :let tabCol = col('.')<cr>yl:let tabChar = @"<cr>
 nnoremap \<space> :set opfunc=ISpace<cr>g@
 
