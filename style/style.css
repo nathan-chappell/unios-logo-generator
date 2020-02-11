@@ -1,0 +1,50 @@
+/* style/style.css */
+
+.Index {
+  border : black solid 10px;
+  border-radius : 20px;
+  width : 200px;
+  background : grey;
+}
+
+.IndexItem {
+  justify-self : center;
+  border : grey solid 5px;
+  border-radius : 10px;
+  background : white;
+  margin : 5px;
+  font : 1.5em serif;
+}
+
+.Dial {
+  width : 100px;
+  height : 100px;
+}
+
+.Dial > circle {
+  stroke : black;
+  stroke-width : .1;
+  fill : grey;
+}
+
+.Dial > line {
+  stroke : black;
+  stroke-width : .1;
+}
+
+.DialInput {
+  display : grid;
+  grid : "dial" 75px
+         "input" 25px
+         / 75px;
+  justify-content : center;
+}
+
+.DialInput > svg {
+  grid-area : dial;
+}
+
+.DialInput > textarea {
+  grid-area : input;
+}
+
