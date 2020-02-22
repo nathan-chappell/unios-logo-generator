@@ -1,0 +1,9 @@
+/* test/test_style.css */
+
+.svgDial > circle {
+  fill : rgba(10,80,100,.5);
+}
+
+.svgDial > * {
+  stroke : rgba(10,10,50,1);
+}
