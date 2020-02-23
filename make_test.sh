@@ -83,6 +83,17 @@ ReactDOM.render(
 "
 }
 
+add_test_store() {
+  echo "adding test_store..."
+  echo "
+import {
+  test_store,
+} from './test_store.js';
+
+test_store();
+" >> ${TEST_FILE}
+}
+
 echo "// test generated: $(date)" > ${TEST_FILE}
 
 for file in ${JS_DIR}/*.js; do
@@ -94,5 +105,6 @@ for file in ${JS_DIR}/*.js; do
 done
 
 make_render
+add_test_store
 babel --presets @babel/react ${TEST_FILE} -o ${TEST_FILE/jsx/js}
 

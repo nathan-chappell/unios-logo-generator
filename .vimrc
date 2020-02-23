@@ -1,6 +1,7 @@
 " .vimrc
 
 set nu hls et ts=2 sts=2 sw=2 fo=croqtjn ai aw nowrap
+noh
 
 nnoremap \mm :w<cr>:!make<cr>
 nnoremap \ww :wa<cr>
@@ -10,6 +11,7 @@ nnoremap \t :!firefox test/test.html<cr>
 nnoremap \ff :call SwitchFileType()<cr>
 nnoremap \mt :!make test.js<cr>
 nnoremap \gf :find <c-r>=expand('<cfile>:t')<cr>x<cr>
+nnoremap \a :set opfunc=AlignFromCursor<cr>g@
 
 function! SwitchFileType()
   " html -> js -> sh
@@ -24,9 +26,21 @@ function! SwitchFileType()
   set indentexpr=
 endfunction
 
+function! AlignFromCursor(type)
+  if a:type == 'char' || a:type == 'block' | return | endif
+  let sep = getline('.')[col('.')-1]
+  let pos = max(map(getline("'[","']"),'match(v:val,"' . sep . '")'))
+  " substitue delmiter
+  let sd = sep == '/' ? '$' : '/'
+  echo 'pos ' . pos . ', sep ' . sep
+  exec "'[,']s".sd.sep.sd.
+        \"\\=repeat(' ',pos-match(getline('.'),'".sep."')).'".sep."'".sd
+endfunction
+
 if !exists('loaded_vimrc')
   e index.html
   vs jsx/script.jsx
 endif
 
 let loaded_vimrc = 1
+echo "foo"
