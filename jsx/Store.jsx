@@ -11,37 +11,23 @@
 export {
   reducer,
   set_CHECK_TYPE,
-  ERROR,
-  expect_error,
-  finish_expect_error,
+  set_THROW_ERROR,
   log_error,
   checkTypeByName,
   TypeName,
 };
 
-let ERROR = '';
-let expect_error_count = 0;
-function expect_error(n) {
-  if (n == undefined) n = 1;
-  expect_error_count += n;
+let THROW_ERROR = false;
+function set_THROW_ERROR(value) {
+  THROW_ERROR = value;
 }
-function Expected() {
-  return { name : 'Expected' };
-}
-function log_error() {
-  if (expect_error_count) {
-    --expect_error_count;
-    // once the expect_error_count reaches 0, throw an expected
-    if (!expect_error_count) throw Expected();
-  }
-  console.error('STORE - ',ERROR,...arguments);
-}
-function finish_expect_error() {
-  if (expect_error_count) {
-    ERROR = 'EXPECT_ERROR_COUNT';
-    count = expect_error_count;
-    expect_error_count = 0;
-    log_error(count);
+function log_error(name,message) {
+  if (THROW_ERROR) {
+    const error = new Error(message);
+    error.name = name;
+    throw error;
+  } else {
+    console.error('STORE - ',name,message);
   }
 }
 
@@ -54,13 +40,20 @@ function finish_expect_error() {
 function checkType(Type,obj) {
   for (property in Type) {
     if (obj[property] === undefined) {
-      ERROR = 'CHECK_TYPE_UNDEFINED_PROPERTY';
-      log_error(property,obj);
+      log_error(
+        'CHECK_TYPE',
+        `${Type[TypeName]}.${property} is undefined`
+      );
       return false;
     }
-    if (typeof obj[property] != Type[property].type) {
-      ERROR = 'CHECK_TYPE_INVALID_TYPE';
-      log_error(property,obj);
+    const obj_prop_type = typeof obj[property];
+    const type_prop_type = typeof Type[property].type;
+    if (obj_prop_type != type_prop_type) {
+      log_error(
+        'CHECK_TYPE',
+        `${Type[TypeName]}.${property} is type ${type_prop_type},` +
+        `got type ${obj_prop_type}`
+      );
       return false;
     }
   }
@@ -146,18 +139,19 @@ function set_CHECK_TYPE(val) {
 
 function reducer(store,action) {
   const { type, payload } = action;
+  if (typeof payload === 'undefined') {
+    log_error('REDUCER','action.payload is undefined');
+    return store;
+  }
   const newStore = new Map(store);
-  ERROR = '';
   switch(type) {
     case undefined: 
-      ERROR = 'ACTION_TYPE_UNDEFINED'
-      log_error(action);
+      log_error('REDUCER','action.type is undefined');
       break;
     case 'ADD_RING':
       const { ring } = payload;
       if (CHECK_TYPE && !checkTypeByName(ring,'ring')) {
-        ERROR = 'ADD_RING_TYPE'
-        log_error(action);
+        log_error('REDUCER.ADD_RING','type check failed');
         return store;
       } else {
         newStore.set(getID(),{...ring, ...{type:RingType[TypeName]}});

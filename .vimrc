@@ -1,6 +1,6 @@
 " .vimrc
 
-set nu hls et ts=2 sts=2 sw=2 fo=croqtjn ai aw nowrap
+set nu hls et ts=2 sts=2 sw=2 fo=croqtjnl ai aw nowrap
 noh
 
 nnoremap \mm :w<cr>:!make<cr>
